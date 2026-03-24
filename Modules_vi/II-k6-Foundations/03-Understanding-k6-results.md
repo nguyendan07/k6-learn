@@ -69,7 +69,7 @@ output: -`
 
 Điều này cho thấy hành vi mặc định: k6 đã in kết quả kiểm thử của bạn ra đầu ra tiêu chuẩn (standard output).
 
-k6 cũng có thể [xuất kết quả ở các định dạng khác](https://k6.io/docs/getting-started/results-output/#external-outputs). Các tùy chọn này, khi được sử dụng, sẽ được hiển thị trong `output`.
+k6 cũng có thể [xuất kết quả ở các định dạng khác](https://grafana.com/docs/k6/latest/get-started/results-output/#time-series-and-external-outputs). Các tùy chọn này, khi được sử dụng, sẽ được hiển thị trong `output`.
 
 ```plain
 scenarios: (100.00%) 1 scenario, 1 max VUs, 10m30s max duration (incl. graceful stop):
