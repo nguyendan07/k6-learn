@@ -1,10 +1,10 @@
-k6 encourages developers and testers to define goals for each test. To do this, you can set [thresholds](https://k6.io/docs/using-k6/thresholds) to evaluate whether the test performs to a certain criteria. As an example, you can use thresholds to assert that the system performs within your service-level objectives while the test runs.
+k6 khuyến khích các nhà phát triển và người kiểm thử xác định mục tiêu cho mỗi bài kiểm tra. Để làm điều này, bạn có thể thiết lập các [ngưỡng (thresholds)](https://k6.io/docs/using-k6/thresholds) để đánh giá xem bài kiểm tra có thực hiện đúng theo một tiêu chí nhất định hay không. Ví dụ, bạn có thể sử dụng thresholds để khẳng định rằng hệ thống hoạt động trong phạm vi các mục tiêu cấp độ dịch vụ (service-level objectives - SLOs) của bạn trong khi bài kiểm tra đang chạy.
 
-You can also use Thresholds to determine whether a test passed or failed. Adding thresholds to a load-testing script is useful because it tells k6 to alert you when those thresholds are breached, or even stop the test. Having thresholds as part of the code makes it easier for other colleagues to step in and run the test.
+Bạn cũng có thể sử dụng Thresholds để xác định xem một bài kiểm tra là đạt (pass) hay không đạt (fail). Việc thêm thresholds vào một kịch bản load-testing là rất hữu ích vì nó yêu cầu k6 cảnh báo cho bạn khi các ngưỡng đó bị vi phạm, hoặc thậm chí là dừng bài kiểm tra. Việc có thresholds như một phần của mã nguồn giúp các đồng nghiệp khác dễ dàng tiếp quản và chạy bài kiểm tra hơn.
 
-If you'd like to run load tests within a CI/CD pipeline, you'll also want k6 to send non-zero exit codes so that failures are clearly recorded.
+Nếu bạn muốn chạy load tests trong một đường ống CI/CD, bạn cũng sẽ muốn k6 gửi các mã thoát (exit codes) khác không để các thất bại được ghi lại một cách rõ ràng.
 
-You can add thresholds to a k6 script in the Test Options object:
+Bạn có thể thêm thresholds vào một kịch bản k6 trong đối tượng Test Options:
 
 ```js
 export let options = {
@@ -20,22 +20,24 @@ export let options = {
 };
 ```
 
-Thresholds are always based on metrics. You can review the full list of [built-in metrics here](https://k6.io/docs/using-k6/metrics/#built-in-metrics).
+Thresholds luôn dựa trên các metrics. Bạn có thể xem danh sách đầy đủ các [metrics tích hợp sẵn tại đây](https://k6.io/docs/using-k6/metrics/#built-in-metrics).
 
-Thresholds are expressed as a statement of what is expected:
-- When threshold statements evaluate to `true`, the threshold is met and the test passes. The exit code that k6 returns is 0.
-- When threshold statements are `false`, the threshold is not met, the test fails, and k6 returns a non-zero exit code.
+Thresholds được thể hiện như một tuyên bố về những gì được kỳ vọng:
 
-## Types of thresholds
+- Khi các tuyên bố threshold được đánh giá là `true`, ngưỡng đó được đáp ứng và bài kiểm tra vượt qua. Mã thoát mà k6 trả về là 0.
+- Khi các tuyên bố threshold là `false`, ngưỡng đó không được đáp ứng, bài kiểm tra thất bại và k6 trả về một mã thoát khác không.
 
-Below are the most common types of thresholds you can set. You can set multiple types thresholds in a single test:
-- Error rate
-- Response time
-- Checks
+## Các loại thresholds
 
-**Testing best practice**: Use error rate, response time, and checks thresholds in your tests where possible.
+Dưới đây là các loại thresholds phổ biến nhất mà bạn có thể thiết lập. Bạn có thể thiết lập nhiều loại thresholds trong một bài kiểm tra duy nhất:
 
-### Error rate
+- Tỷ lệ lỗi (Error rate)
+- Thời gian phản hồi (Response time)
+- Phép kiểm tra (Checks)
+
+**Thực hành kiểm thử tốt nhất**: Sử dụng thresholds cho error rate, response time và checks trong các bài kiểm tra của bạn nếu có thể.
+
+### Tỷ lệ lỗi (Error rate)
 
 ```js
 thresholds: {
@@ -43,18 +45,19 @@ thresholds: {
 },
 ```
 
-To add a threshold for the error rate, use the metric `http_req_failed` and enter the error rate that you expect the test to fall within. By default, `http_req_failed` counts any HTTP 4xx and HTTP 5xx errors as a failure. You can change this behavior with [`setResponseCallback()`](https://k6.io/docs/javascript-api/k6-http/setresponsecallback-callback/).
+Để thêm một threshold cho tỷ lệ lỗi, hãy sử dụng metric `http_req_failed` và nhập tỷ lệ lỗi mà bạn mong đợi bài kiểm tra sẽ nằm trong phạm vi đó. Theo mặc định, `http_req_failed` tính bất kỳ lỗi HTTP 4xx và HTTP 5xx nào là một thất bại. Bạn có thể thay đổi hành vi này bằng [`setResponseCallback()`](https://k6.io/docs/javascript-api/k6-http/setresponsecallback-callback/).
 
-The threshold above will be met only if the error rate during the test is less than or equal to 5%.
+Threshold ở trên sẽ chỉ được đáp ứng nếu tỷ lệ lỗi trong quá trình kiểm thử nhỏ hơn hoặc bằng 5%.
 
-#### Rule of thumb: error rate
+#### Quy tắc chung: tỷ lệ lỗi
 
-What's a good error rate? This depends on your test, script, test data, application, and end users' tolerance for error:
-- For mission-critical applications, consider a lower error rate such as 1%.
-- For auxiliary or non-critical applications, consider a higher error rate of 5%.
-- For testing disaster recovery situations, where you're purposely terminating or restarting server nodes, an error rate of 10-15% may be acceptable.
+Tỷ lệ lỗi bao nhiêu là tốt? Điều này phụ thuộc vào bài kiểm tra, kịch bản, dữ liệu kiểm thử, ứng dụng và khả năng chịu lỗi của người dùng cuối:
 
-### Response time
+- Đối với các ứng dụng quan trọng mang tính sống còn (mission-critical), hãy cân nhắc tỷ lệ lỗi thấp hơn như 1%.
+- Đối với các ứng dụng phụ trợ hoặc không quan trọng, hãy cân nhắc tỷ lệ lỗi cao hơn là 5%.
+- Đối với việc kiểm thử các tình huống phục hồi sau thảm họa, nơi bạn đang cố tình chấm dứt hoặc khởi động lại các nút máy chủ, tỷ lệ lỗi từ 10-15% có thể chấp nhận được.
+
+### Thời gian phản hồi (Response time)
 
 ```js
 thresholds: {
@@ -62,34 +65,35 @@ thresholds: {
 },
 ```
 
-In the example above, the response time threshold is set to a 95th percentile response time of 5000 milliseconds. This statement will be true if 95% of all HTTP requests have a response time of 5 seconds or less.
+Trong ví dụ trên, ngưỡng thời gian phản hồi được đặt thành thời gian phản hồi ở phân vị thứ 95 (95th percentile response time) là 5000 mili giây. Tuyên bố này sẽ đúng nếu 95% tất cả các yêu cầu HTTP có thời gian phản hồi từ 5 giây trở xuống.
 
-You can add a response time threshold using any of the metrics displayed in the [k6 end-of-test summary](03-Understanding-k6-results.md):
+Bạn có thể thêm một ngưỡng thời gian phản hồi bằng cách sử dụng bất kỳ chỉ số nào được hiển thị trong [tóm tắt kết thúc kiểm thử của k6](03-Understanding-k6-results.md):
 
 ```plain
 http_req_duration..............: avg=151.06ms min=151.06ms med=151.06ms max=151.06ms p(90)=151.06ms p(95)=151.06ms
 ```
 
-That includes:
-- average: `http_req_duration: ['avg<=5000'],`
-- minimum: `http_req_duration: ['min<=1000'],`
-- median: `http_req_duration: ['med<=3000'],`
-- maximum: `http_req_duration: ['max<=6000'],`
-- percentiles: `http_req_duration: ['p(95)<=5000'],`
+Bao gồm:
 
-**Testing best practice**: All of these metrics can be skewed by the presence of outliers in response time on either extreme, but if you don't know which one to choose, we recommend starting with the 95th percentile response time.
+- trung bình (average): `http_req_duration: ['avg<=5000'],`
+- tối thiểu (minimum): `http_req_duration: ['min<=1000'],`
+- trung vị (median): `http_req_duration: ['med<=3000'],`
+- tối đa (maximum): `http_req_duration: ['max<=6000'],`
+- các phân vị (percentiles): `http_req_duration: ['p(95)<=5000'],`
 
-#### Rule of thumb: response time
+**Thực hành kiểm thử tốt nhất**: Tất cả các chỉ số này đều có thể bị làm sai lệch bởi sự hiện diện của các giá trị ngoại lai (outliers) trong thời gian phản hồi ở cả hai thái cực, nhưng nếu bạn không biết nên chọn cái nào, chúng tôi khuyên bạn nên bắt đầu với thời gian phản hồi ở phân vị thứ 95.
+
+#### Quy tắc chung: thời gian phản hồi
 
 [![Google mobile-page-speed-new-industry-benchmarks](../../images/52qQi-marketing-strategies-app-and-mobile-page-load-time-statistics-downlo.jpg)](https://www.thinkwithgoogle.com/marketing-strategies/app-and-mobile/page-load-time-statistics/)
 
-[According to research by Google](https://www.thinkwithgoogle.com/marketing-strategies/app-and-mobile/mobile-page-speed-new-industry-benchmarks/), the probability of potential customers leaving your site increases by 32% when the response time increases to 3 seconds.
+[Theo nghiên cứu của Google](https://www.thinkwithgoogle.com/marketing-strategies/app-and-mobile/mobile-page-speed-new-industry-benchmarks/), xác suất khách hàng tiềm năng rời khỏi trang web của bạn tăng 32% khi thời gian phản hồi tăng lên 3 giây.
 
-When in doubt, we recommend using a 95th percentile response time of 2 seconds as a starting point.
+Khi nghi ngờ, chúng tôi khuyên bạn nên sử dụng thời gian phản hồi ở phân vị thứ 95 là 2 giây làm điểm bắt đầu.
 
-#### Using multiple response time thresholds
+#### Sử dụng nhiều ngưỡng thời gian phản hồi
 
-You can also string along multiple thresholds for the same metric in an array, and response time is a good candidate for this:
+Bạn cũng có thể xâu chuỗi nhiều thresholds cho cùng một metric trong một mảng, và thời gian phản hồi là một ứng cử viên tốt cho việc này:
 
 ```js
 thresholds: {
@@ -97,12 +101,13 @@ thresholds: {
 },
 ```
 
-The threshold above states that:
-- 90% of all HTTP requests should have a response time lower than 400 ms
-- 95% of all HTTP requests should have a response time lower than 800 ms
-- 99.9% of all HTTP requests should have a response time lower than 2000 ms
+Threshold ở trên tuyên bố rằng:
 
-> :warning: Specifying multiple thresholds for the same metric. If you want to include more than one threshold for the same metric, such as `http_req_duration` above, you **must** declare them in an array. The example below will NOT work, and will result in only the last line being used as a threshold:
+- 90% tất cả các yêu cầu HTTP nên có thời gian phản hồi thấp hơn 400 ms
+- 95% tất cả các yêu cầu HTTP nên có thời gian phản hồi thấp hơn 800 ms
+- 99.9% tất cả các yêu cầu HTTP nên có thời gian phản hồi thấp hơn 2000 ms
+
+> :warning: Việc chỉ định nhiều thresholds cho cùng một metric. Nếu bạn muốn bao gồm nhiều hơn một threshold cho cùng một metric, chẳng hạn như `http_req_duration` ở trên, bạn **phải** khai báo chúng trong một mảng. Ví dụ dưới đây sẽ KHÔNG hoạt động, và sẽ dẫn đến việc chỉ dòng cuối cùng được sử dụng làm threshold:
 
 ```js
 thresholds: {
@@ -112,9 +117,9 @@ thresholds: {
 },
 ```
 
-### Checks
+### Phép kiểm tra (Checks)
 
-As you learned in [Adding checks to your script](04-Adding-checks-to-your-script.md), failed checks are reported, but they don't affect the status of the test as a whole. If you want to make the test fail when a certain check error rate is reached, you can use a combination of checks and thresholds:
+Như bạn đã học trong phần [Thêm checks vào kịch bản của bạn](04-Adding-checks-to-your-script.md), các checks thất bại được báo cáo, nhưng chúng không ảnh hưởng đến trạng thái của toàn bộ bài kiểm tra. Nếu bạn muốn làm cho bài kiểm tra thất bại khi đạt đến một tỷ lệ lỗi check nhất định, bạn có thể sử dụng kết hợp các checks và thresholds:
 
 ```js
 thresholds: {
@@ -122,13 +127,13 @@ thresholds: {
 },
 ```
 
-The threshold above states that 90% or more of all checks in the test should be successful. Otherwise, the test will fail.
+Threshold ở trên tuyên bố rằng 90% hoặc nhiều hơn tất cả các checks trong bài kiểm tra phải thành công. Nếu không, bài kiểm tra sẽ thất bại.
 
-## Aborting test on fail
+## Hủy bỏ bài kiểm tra khi thất bại (Aborting test on fail)
 
-There may be situations in which you would like the test to stop running if thresholds aren't met. For example, if a test has a very high error rate due to an application component being unresponsive, it may be better to stop the test and start troubleshooting the issue.
+Có thể có những tình huống mà bạn muốn bài kiểm tra dừng chạy nếu các thresholds không được đáp ứng. Ví dụ, nếu một bài kiểm tra có tỷ lệ lỗi rất cao do một thành phần ứng dụng không phản hồi, tốt hơn là nên dừng bài kiểm tra và bắt đầu khắc phục sự cố.
 
-In these situations, you can extend the relevant threshold to tell k6 to abort the test if the threshold is not met. Instead of:
+Trong những tình huống này, bạn có thể mở rộng threshold liên quan để yêu cầu k6 hủy bỏ bài kiểm tra nếu ngưỡng không được đáp ứng. Thay vì:
 
 ```js
 thresholds: {
@@ -136,7 +141,7 @@ thresholds: {
 },
 ```
 
-try this:
+hãy thử cách này:
 
 ```js
 thresholds: {
@@ -147,17 +152,17 @@ thresholds: {
 },
 ```
 
-The extra parameter `abortOnFail: true` instructs k6 to stop the test (without a [graceful stop](https://k6.io/docs/misc/glossary/#graceful-stop)) as soon as the threshold is crossed. In this case, that happens when the error rate goes over 5%. k6 will display the end-of-test summary report with an error that looks like this:
+Tham số bổ sung `abortOnFail: true` hướng dẫn k6 dừng bài kiểm tra (mà không có [graceful stop](https://k6.io/docs/misc/glossary/#graceful-stop)) ngay khi ngưỡng bị vượt qua. Trong trường hợp này, điều đó xảy ra khi tỷ lệ lỗi vượt quá 5%. k6 sẽ hiển thị báo cáo tóm tắt kết thúc kiểm thử với một lỗi trông như thế này:
 
 ```plain
-ERRO[0012] some thresholds have failed 
+ERRO[0012] some thresholds have failed
 ```
 
-and you'll know that the test aborted due to a threshold failure.
+và bạn sẽ biết rằng bài kiểm tra đã bị hủy bỏ do vi phạm threshold.
 
-## Run it yourself!
+## Tự chạy nó!
 
-Your script should look something like this:
+Kịch bản của bạn nên trông giống như thế này:
 
 ```js
 import http from 'k6/http';
@@ -190,13 +195,13 @@ export default function() {
 }
 ```
 
-Copy the script, save it, and do a `k6 run test.js` to run the test with thresholds.
+Sao chép kịch bản, lưu lại và thực hiện lệnh `k6 run test.js` để chạy bài kiểm tra với thresholds.
 
-## Test your knowledge
+## Kiểm tra kiến thức của bạn
 
-### Question 1
+### Câu hỏi 1
 
-Your team has decided to aim for a 95th percentile response time of 2 seconds. What is the best way to express this as a threshold?
+Đội ngũ của bạn đã quyết định hướng tới thời gian phản hồi ở phân vị thứ 95 là 2 giây. Cách tốt nhất để thể hiện điều này dưới dạng một threshold là gì?
 
 A: `http_req_duration: ['p(95)>2000'],`
 
@@ -204,9 +209,9 @@ B: `http_response_time: ['avg<=2000'],`
 
 C: `http_req_duration: ['p(95)<=2000'],`
 
-### Question 2
+### Câu hỏi 2
 
-Your test script has the following threshold defined in the test options:
+Kịch bản kiểm thử của bạn có threshold sau được định nghĩa trong các tùy chọn kiểm thử:
 
 ```js
 thresholds: {
@@ -214,16 +219,17 @@ thresholds: {
 },
 ```
 
-The test runs for 100 iterations of 1 HTTP request each. 3 of the HTTP requests fail the check. Which of the following outcomes would you expect?
+Bài kiểm tra chạy trong 100 lần lặp, mỗi lần lặp có 1 yêu cầu HTTP. Có 3 yêu cầu HTTP không vượt qua check. Bạn mong đợi kết quả nào sau đây?
 
-A: The test will abort on failure of the check threshold.
+A: Bài kiểm tra sẽ hủy bỏ khi thất bại ngưỡng check.
 
-B: The test will run to completion and will be marked as a success because check failures do not fail tests.
+B: Bài kiểm tra sẽ chạy đến khi hoàn thành và được đánh dấu là thành công vì các thất bại check không làm hỏng bài kiểm tra.
 
-C: The test will run to completion, but there will be an error that some thresholds have failed.
-### Question 3
+C: Bài kiểm tra sẽ chạy đến khi hoàn thành, nhưng sẽ có thông báo lỗi rằng một số thresholds đã thất bại.
 
-Your test script has the following threshold defined in the test options:
+### Câu hỏi 3
+
+Kịch bản kiểm thử của bạn có threshold sau được định nghĩa trong các tùy chọn kiểm thử:
 
 ```js
 thresholds: {
@@ -233,26 +239,26 @@ thresholds: {
 }
 ```
 
-Which of the following statements is true?
+Phát biểu nào sau đây là đúng?
 
-A: The test will fail if the error rate is 5% or higher.
+A: Bài kiểm tra sẽ thất bại nếu tỷ lệ lỗi là 5% hoặc cao hơn.
 
-B: The test will fail if the error rate exceeds 3%.
+B: Bài kiểm tra sẽ thất bại nếu tỷ lệ lỗi vượt quá 3%.
 
-C: The test will pass if the 90th percentile response time is 4 seconds.
+C: Bài kiểm tra sẽ vượt qua nếu thời gian phản hồi ở phân vị thứ 90 là 4 giây.
 
-## A note on thresholds
+## Một ghi chú về thresholds
 
-Thresholds are useful as initial indicators of the success or failure of a test run. However, they should not be used as the _only_ way to assess a test.
+Thresholds hữu ích như những chỉ số ban đầu về sự thành công hay thất bại của một lần chạy thử. Tuy nhiên, chúng không nên được sử dụng như cách _duy nhất_ để đánh giá một bài kiểm tra.
 
-The main limitation of thresholds is that they're based on metrics, and metrics can be heavily influenced by the presence of a handful of outlier measurements that are either extremely low or extremely high.
+Hạn chế chính của thresholds là chúng dựa trên các metrics, và các metrics có thể bị ảnh hưởng nặng nề bởi sự hiện diện của một vài phép đo ngoại lai cực thấp hoặc cực cao.
 
-Metrics like percentiles do a slightly better job at describing where measurements fall, but there's no replacement for graphing each of those measurements and seeing the shape of the distribution of the data for yourself.
+Các metrics như phân vị (percentiles) thực hiện công việc mô tả vị trí các phép đo rơi vào tốt hơn một chút, nhưng không có gì thay thế được việc vẽ đồ thị cho từng phép đo đó và tự mình nhìn thấy hình dạng phân phối của dữ liệu.
 
-The problem is that k6 OSS doesn't produce graphs natively. In the next section, you'll learn about how to output results for use in your results visualization tool of choice.
+Vấn đề là k6 OSS không tạo ra các biểu đồ một cách nguyên bản. Trong phần tiếp theo, bạn sẽ tìm hiểu về cách xuất kết quả để sử dụng trong công cụ trực quan hóa kết quả mà bạn chọn.
 
-### Answers
+### Đáp án
 
-1. C. Thresholds are expressed in terms of what would cause them to pass, so C is the correct answer because it describes a test whose 95th percentile response time is less than (faster than) or equal to 2000 ms, or 2 seconds. Anything beyond this would cause the threshold to fail.
-2. C. Thresholds don't abort tests on failure [unless `abortOnFail` is set to `true`](https://k6.io/docs/using-k6/thresholds/#aborting-a-test-when-a-threshold-is-crossed), so only C is correct. The test will still go through the execution, but a message will be displayed in the end-of-test summary to say that some thresholds have failed.
-3. B. A is incorrect because when contradicting thresholds are defined, the last one will be used, so the threshold on `http_req_failure` will be set to 3% rather than 5%. C is incorrect because the threshold is set to pass if the response time is *less than* 4 seconds, so a 4-second response time will cause it to fail.
+1. C. Thresholds được thể hiện theo những gì sẽ khiến chúng vượt qua, vì vậy C là câu trả lời đúng vì nó mô tả một bài kiểm tra có thời gian phản hồi ở phân vị thứ 95 nhỏ hơn (nhanh hơn) hoặc bằng 2000 ms, tức là 2 giây. Bất cứ điều gì vượt quá mức này sẽ khiến threshold thất bại.
+2. C. Thresholds không hủy bỏ bài kiểm tra khi thất bại [trừ khi `abortOnFail` được đặt thành `true`](https://k6.io/docs/using-k6/thresholds/#aborting-a-test-when-a-threshold-is-crossed), vì vậy chỉ có C là đúng. Bài kiểm tra vẫn sẽ thực hiện hết quá trình chạy, nhưng một thông báo sẽ được hiển thị trong tóm tắt kết thúc kiểm thử để nói rằng một số thresholds đã thất bại.
+3. B. A sai vì khi các thresholds mâu thuẫn được định nghĩa, cái cuối cùng sẽ được sử dụng, vì vậy ngưỡng trên `http_req_failure` sẽ được đặt thành 3% thay vì 5%. C sai vì ngưỡng được thiết lập để vượt qua nếu thời gian phản hồi _nhỏ hơn_ 4 giây, vì vậy thời gian phản hồi 4 giây sẽ khiến nó thất bại.

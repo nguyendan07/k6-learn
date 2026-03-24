@@ -1,21 +1,23 @@
-# k6 Load Test Options
+# Các tùy chọn kiểm thử tải của k6 (k6 Load Test Options)
 
-Up until now, you've been running the same script with a single VU and a single iteration. In this section, you'll learn how to scale that out and run a full-sized load test against your application.
+Cho đến nay, bạn đã chạy cùng một kịch bản với một VU duy nhất và một lần lặp duy nhất. Trong phần này, bạn sẽ học cách mở rộng quy mô đó và chạy một bài kiểm thử tải đầy đủ đối với ứng dụng của mình.
 
-Test options are configuration values that affect how your test script is executed, such as the number of VUs or iterations, the duration of your test, and more. They are also sometimes called "test parameters".
+Các tùy chọn kiểm thử (test options) là các giá trị cấu hình ảnh hưởng đến cách kịch bản kiểm thử của bạn được thực thi, chẳng hạn như số lượng VUs hoặc iterations, thời lượng của bài kiểm tra, và nhiều hơn nữa. Đôi khi chúng còn được gọi là "các tham số kiểm thử".
 
-k6 comes with some default test options, but there are four different ways to change the test parameters for a script:
-1. You can include command-line flags when running a k6 script (such as `k6 run --vus 10 --iterations 30`).
-2. You can define [environment variables](https://k6.io/docs/using-k6/environment-variables/) on the command-line that are passed to the script.
-3. You can define them within the test script itself.
-4. You can include a configuration file.
+k6 đi kèm với một số tùy chọn kiểm thử mặc định, nhưng có bốn cách khác nhau để thay đổi các tham số kiểm thử cho một kịch bản:
 
-For now, you'll learn to do the third option: defining test parameters within the script itself. The advantages of this approach are:
-- Simplicity: no extra files or commands are required.
-- Repeatability: Adding these parameters to the script make it easier for a colleague to run tests you've written.
-- Version controllability: Changes to the test parameters can be tracked along with test code.
+1. Bạn có thể bao gồm các cờ dòng lệnh (command-line flags) khi chạy một kịch bản k6 (chẳng hạn như `k6 run --vus 10 --iterations 30`).
+2. Bạn có thể xác định [các biến môi trường](https://k6.io/docs/using-k6/environment-variables/) trên dòng lệnh để truyền vào kịch bản.
+3. Bạn có thể xác định chúng ngay bên trong chính kịch bản kiểm thử.
+4. Bạn có thể bao gồm một tệp cấu hình.
 
-To use test options within a script, add the following lines to your script. By convention, it's best to add it after the import statements and before the default function, so that the options are easily read upon opening the script:
+Hiện tại, bạn sẽ học cách thực hiện tùy chọn thứ ba: xác định các tham số kiểm thử bên trong chính kịch bản. Các ưu điểm của cách tiếp cận này là:
+
+- Sự đơn giản: không yêu cầu thêm tệp hoặc lệnh bổ sung.
+- Khả năng lặp lại: Việc thêm các tham số này vào kịch bản giúp đồng nghiệp dễ dàng chạy các bài kiểm tra mà bạn đã viết.
+- Khả năng quản lý phiên bản: Các thay đổi đối với các tham số kiểm thử có thể được theo dõi cùng với mã kiểm thử.
+
+Để sử dụng các tùy chọn kiểm thử bên trong một kịch bản, hãy thêm các dòng sau vào kịch bản của bạn. Theo quy ước, tốt nhất là thêm nó sau các câu lệnh import và trước hàm mặc định, để các tùy chọn dễ dàng được đọc khi mở kịch bản:
 
 ```js
 export let options = {
@@ -24,7 +26,7 @@ export let options = {
 };
 ```
 
-If you set multiple options, make sure you end each one with  `,`.
+Nếu bạn thiết lập nhiều tùy chọn, hãy đảm bảo bạn kết thúc mỗi tùy chọn bằng dấu `,`.
 
 ## VUs
 
@@ -32,9 +34,9 @@ If you set multiple options, make sure you end each one with  `,`.
 vus: 10,
 ```
 
-In this line, you can change the number of virtual users that k6 will run.
+Trong dòng này, bạn có thể thay đổi số lượng người dùng ảo (virtual users) mà k6 sẽ chạy.
 
-Note that if you only define VUs and no other test options, you may get the following error:
+Lưu ý rằng nếu bạn chỉ xác định VUs mà không có tùy chọn kiểm thử nào khác, bạn có thể nhận được lỗi sau:
 
 ```plain
           /\      |‾‾| /‾‾/   /‾‾/   
@@ -43,13 +45,14 @@ Note that if you only define VUs and no other test options, you may get the foll
    /          \   |  |\  \ |  (‾)  | 
   / __________ \  |__| \__\ \_____/ .io
 
-WARN[0000] the `vus=10` option will be ignored, it only works in conjunction with `iterations`, `duration`, or `stages` 
+WARN[0000] the `vus=10` option will be ignored, it only works in conjunction with `iterations`, `duration`, or `stages`
   execution: local
      script: test.js
      output: -
 ```
 
-If you set the number of VUs, you need to additionally specify how long those users should be executed for, using one of the following options:
+Nếu bạn thiết lập số lượng VUs, bạn cần xác định thêm thời gian những người dùng đó sẽ được thực thi, bằng cách sử dụng một trong các tùy chọn sau:
+
 - iterations
 - durations
 - stages
@@ -61,7 +64,7 @@ If you set the number of VUs, you need to additionally specify how long those us
   iterations: 40,
 ```
 
-Setting the number of iterations in test options defines it for *all* users. In the example above, the test will run for a total of 40 iterations, with each of the 10 users executing the script exactly 4 times.
+Thiết lập số lần lặp (iterations) trong các tùy chọn kiểm thử sẽ xác định nó cho _tất cả_ người dùng. Trong ví dụ trên, bài kiểm tra sẽ chạy tổng cộng 40 lần lặp, với mỗi người dùng trong số 10 người dùng thực thi kịch bản đúng 4 lần.
 
 ## Duration
 
@@ -70,16 +73,17 @@ Setting the number of iterations in test options defines it for *all* users. In 
   duration: '2m'
 ```
 
-Setting the duration instructs k6 to repeat (iterate) the script for each of the specified number of users until the duration is reached.
+Thiết lập thời lượng (duration) hướng dẫn k6 lặp lại kịch bản cho mỗi số lượng người dùng đã chỉ định cho đến khi đạt đến thời lượng đó.
 
-Duration can be set using `h` for hours, `m` for minutes, and `s` for seconds, like these examples:
+Thời lượng có thể được thiết lập bằng cách sử dụng `h` cho giờ, `m` cho phút và `s` cho giây, như các ví dụ sau:
+
 - `duration: '1h30m'`
 - `duration: '30s'`
 - `duration: '5m30s'`
 
-If you set duration but don't specify a number of VUs, k6 will use the default VU number of 1.
+Nếu bạn thiết lập thời lượng nhưng không chỉ định số lượng VUs, k6 sẽ sử dụng số lượng VU mặc định là 1.
 
-If you set the duration in conjunction with setting the number of iterations, the value that ends earlier is used. For example, given the following options:
+Nếu bạn thiết lập thời lượng kết hợp với việc thiết lập số lần lặp, giá trị nào kết thúc sớm hơn sẽ được sử dụng. Ví dụ, với các tùy chọn sau:
 
 ```js
   vus: 10,
@@ -87,23 +91,23 @@ If you set the duration in conjunction with setting the number of iterations, th
   iterations: 40,
 ```
 
-k6 will execute the test for 40 iterations or 5 minutes, *whichever ends earlier*. If it takes 1 minute to finish 40 total iterations, the test will end after 1 minute. If it takes 10 minutes to finish 40 total iterations, the test will end after 5 minutes.
+k6 sẽ thực hiện bài kiểm tra trong 40 lần lặp hoặc 5 phút, _tùy theo điều kiện nào kết thúc trước_. Nếu mất 1 phút để hoàn thành tổng cộng 40 lần lặp, bài kiểm tra sẽ kết thúc sau 1 phút. Nếu mất 10 phút để hoàn thành tổng cộng 40 lần lặp, bài kiểm tra sẽ kết thúc sau 5 phút.
 
 ### Stages
 
-Defining iterations and durations both cause k6 to execute your test script using a [simple load profile](../XX-Future-Ideas/Parameters-of-a-load-test.md#Simple-load-profile): VUs are started, sustained for a certain time or number of iterations, and then ended.
+Xác định iterations và durations đều khiến k6 thực thi kịch bản kiểm thử của bạn bằng một [hồ sơ tải đơn giản (simple load profile)](../XX-Future-Ideas/Parameters-of-a-load-test.md#Simple-load-profile): VUs được khởi động, duy trì trong một thời gian hoặc số lần lặp nhất định, và sau đó kết thúc.
 
 ![A simple load profile](../../images/load_profile-no_ramp-up_or_ramp-down.png)
 
-_Simple load profile_
+_Hồ sơ tải đơn giản_
 
-What if you want to add a [ramp-up or ramp-down](../XX-Future-Ideas/Parameters-of-a-load-test.md#ramp-up-and-ramp-down-periods), so that the profile looks more like this?
+Điều gì sẽ xảy ra nếu bạn muốn thêm một giai đoạn [ramp-up hoặc ramp-down](../XX-Future-Ideas/Parameters-of-a-load-test.md#ramp-up-and-ramp-down-periods), để hồ sơ trông giống như thế này hơn?
 
 ![Constant load profile, with ramps](../../images/load_profile-constant.png.png)
 
-_Constant load profile, with ramps_
+_Hồ sơ tải không đổi, có ramp_
 
-In that case, you may want to use [stages](https://k6.io/docs/using-k6/options/#stages).
+Trong trường hợp đó, bạn có thể muốn sử dụng [stages](https://k6.io/docs/using-k6/options/#stages).
 
 ```js
 export let options = {
@@ -115,17 +119,17 @@ export let options = {
 };
 ```
 
-The stages option lets you define different steps or phases for your load test, each of which can be configured with a number of VUs and duration. The example above consists of three steps (but you can add more if you'd like).
+Tùy chọn stages cho phép bạn xác định các bước hoặc giai đoạn khác nhau cho bài kiểm thử tải của mình, mỗi giai đoạn có thể được cấu hình với số lượng VUs và thời lượng. Ví dụ trên bao gồm ba bước (nhưng bạn có thể thêm nhiều hơn nếu muốn).
 
-1. The first step is a gradual ramp-up from 0 VUs to 100 VUs.
-2. The second step defines the [steady state](../XX-Future-Ideas/Parameters-of-a-load-test.md#Steady-state). The load is held constant at 100 VUs for 1 hour.
-3. Then, the third step is a gradual ramp-down from 100 VUs back to 0, at which point the test ends.
+1. Bước đầu tiên là tăng dần (ramp-up) từ 0 VUs lên 100 VUs.
+2. Bước thứ hai xác định [trạng thái ổn định (steady state)](../XX-Future-Ideas/Parameters-of-a-load-test.md#Steady-state). Tải được giữ không đổi ở mức 100 VUs trong 1 giờ.
+3. Sau đó, bước thứ ba là giảm dần (ramp-down) từ 100 VUs trở về 0, tại thời điểm đó bài kiểm tra kết thúc.
 
-Stages are the most versatile way to define test parameters for a single scenario. They give you flexibility in shaping the load of your test to match the situation in production that you're trying to simulate.
+Stages là cách linh hoạt nhất để xác định các tham số kiểm thử cho một kịch bản duy nhất. Chúng mang lại cho bạn sự linh hoạt trong việc định hình tải của bài kiểm tra để phù hợp với tình huống trong môi trường production mà bạn đang cố gắng mô phỏng.
 
-## The full script so far
+## Kịch bản đầy đủ cho đến nay
 
-If you're using stages, here's what your script should look like so far:
+Nếu bạn đang sử dụng stages, đây là giao diện kịch bản của bạn cho đến nay:
 
 ```js
 import http from 'k6/http';
@@ -146,15 +150,15 @@ export default function() {
       'Application says hello': (r) => r.body.includes('Hello world!')
   });
 
-  sleep(Math.random() * 5);
+    sleep(Math.random() * 5);
 }
 ```
 
-## Test your knowledge
+## Kiểm tra kiến thức của bạn
 
-### Question 1
+### Câu hỏi 1
 
-You've been instructed to create a script that sends the same HTTP request exactly 100 times. Which of the following test options is the best way to accomplish this task?
+Bạn đã được hướng dẫn tạo một kịch bản gửi cùng một yêu cầu HTTP đúng 100 lần. Tùy chọn kiểm thử nào sau đây là cách tốt nhất để hoàn thành nhiệm vụ này?
 
 A: Iterations
 
@@ -162,10 +166,9 @@ B: Stages
 
 C: Duration
 
+### Câu hỏi 2
 
-### Question 2
-
-Given the test options as specified below, how long will the test be executed?
+Với các tùy chọn kiểm thử như được chỉ định bên dưới, bài kiểm tra sẽ được thực thi trong bao lâu?
 
 ```js
 export let options = {
@@ -175,18 +178,18 @@ export let options = {
 };
 ```
 
-A: 10 hours
+A: 10 giờ
 
-B: As long as it takes to finish 3 iterations or 1h, whichever is shorter
+B: Cho đến khi hoàn thành 3 lần lặp hoặc 1 giờ, tùy theo điều kiện nào ngắn hơn
 
-C: 1 hour plus as long as it takes to finish 3 iterations
+C: 1 giờ cộng với thời gian cần thiết để hoàn thành 3 lần lặp
 
+### Câu hỏi 3
 
-### Question 3
+Tùy chọn kiểm thử nào sau đây sẽ tạo ra một mô hình tải theo bậc thang để thêm 100 người dùng trong vòng 10 phút, giữ mức tải đó ổn định trong 30 phút, và sau đó tiếp tục mô hình đó cho đến khi có 300 VUs chạy trong 30 phút?
 
-Which of the following test options will yield a stepped load pattern that adds 100 users within 10 minutes, holds that load steady for 30 minutes, and then continues that pattern until 300 VUs have been running for 30 minutes?
+A:
 
-A: 
 ```js
 export let options = {
   stages: [
@@ -200,7 +203,7 @@ export let options = {
 };
 ```
 
-B: 
+B:
 
 ```js
 export let options = {
@@ -209,7 +212,7 @@ export let options = {
 };
 ```
 
-C: 
+C:
 
 ```js
 export let options = {
@@ -218,9 +221,8 @@ export let options = {
 };
 ```
 
+### Đáp án
 
-### Answers
-
-1. A. Setting the number of iterations to 100 would be the best way to accomplish this task. Stages for [some executors](https://k6.io/docs/using-k6/scenarios/executors/ramping-arrival-rate) do allow you to do this as well, but not for all of them. Duration only changes how long the test will run for, not specifically how many times it iterates.
-2. B. In the case of contradicting parameters, k6 will run for the shorter amount of time. In this case, 3 iterations will likely take less time than 1 hour, so the test will finish in less time than an hour.
-3. A. B and C are incorrect because they both describe a test that will gradually and evenly add virtual users until there are 300 running. That is, the rate of increase is steady. A is the only correct one because it's the only one that includes a steady state (a period of no VU increases) between periods of ramp-up.
+1. A. Thiết lập số lần lặp thành 100 sẽ là cách tốt nhất để hoàn thành nhiệm vụ này. Các stages cho [một số executors](https://k6.io/docs/using-k6/scenarios/executors/ramping-arrival-rate) cũng cho phép bạn làm điều này, nhưng không phải cho tất cả chúng. Duration chỉ thay đổi thời gian bài kiểm tra sẽ chạy trong bao lâu, không cụ thể là nó lặp lại bao nhiêu lần.
+2. B. Trong trường hợp các tham số mâu thuẫn nhau, k6 sẽ chạy trong khoảng thời gian ngắn hơn. Trong trường hợp này, 3 lần lặp có thể sẽ mất ít thời gian hơn 1 giờ, vì vậy bài kiểm tra sẽ kết thúc trong thời gian ít hơn một giờ.
+3. A. B và C sai vì cả hai đều mô tả một bài kiểm tra sẽ tăng dần và đều đặn người dùng ảo cho đến khi có 300 người dùng đang chạy. Nghĩa là, tốc độ tăng là ổn định. A là câu trả lời đúng duy nhất vì nó là câu duy nhất bao gồm một trạng thái ổn định (một khoảng thời gian không tăng VU) giữa các giai đoạn ramp-up.

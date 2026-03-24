@@ -1,10 +1,10 @@
-In the last section, you ran your first k6 test&mdash;but how do you know what happened in the test?
+Trong phần trước, bạn đã chạy bài kiểm tra k6 đầu tiên của mình—nhưng làm thế nào để bạn biết điều gì đã xảy ra trong bài kiểm tra đó?
 
-In this section, you'll learn how to understand the default output of k6 and determine whether your script did as intended.
+Trong phần này, bạn sẽ học cách hiểu đầu ra mặc định của k6 và xác định xem kịch bản của bạn có hoạt động như mong muốn hay không.
 
-## The End-of-test summary report
+## Báo cáo tóm tắt kết thúc kiểm thử (End-of-test summary report)
 
-Here's that output again:
+Dưới đây là kết quả đầu ra đó một lần nữa:
 
 ```plain
 $ k6 run test.js
@@ -44,79 +44,79 @@ default ✓ [======================================] 1 VUs  00m00.7s/10m0s  1/1 
 
 ```
 
-This is the end-of-test summary report. It's the default way that k6 displays test results.
+Đây là báo cáo tóm tắt kết thúc kiểm thử. Đó là cách mặc định mà k6 hiển thị kết quả kiểm thử.
 
-Let's go through it, line by line.
+Hãy cùng xem xét từng dòng một.
 
-### Execution parameters
+### Các tham số thực thi (Execution parameters)
 
 ```plain
 execution: local
 ```
 
-You can use k6 OSS to run test scripts locally (`local`) or on k6 Cloud (`cloud`).
-In this test, the test script was executed on your local machine.
+Bạn có thể sử dụng k6 OSS để chạy các kịch bản kiểm thử cục bộ (`local`) hoặc trên k6 Cloud (`cloud`).
+Trong bài kiểm tra này, kịch bản kiểm thử đã được thực thi trên máy cục bộ của bạn.
 
 ```plain
 script: test.js`
 ```
 
-This is the filename of the script that was executed.
+Đây là tên tệp của kịch bản đã được thực thi.
 
 ```plain
 output: -`
 ```
 
-This indicates the default behavior: k6 printed your test results to standard output.
+Điều này cho thấy hành vi mặc định: k6 đã in kết quả kiểm thử của bạn ra đầu ra tiêu chuẩn (standard output).
 
-k6 can also [output results in other formats](https://k6.io/docs/getting-started/results-output/#external-outputs). These options, when used, are displayed in `output`.
+k6 cũng có thể [xuất kết quả ở các định dạng khác](https://k6.io/docs/getting-started/results-output/#external-outputs). Các tùy chọn này, khi được sử dụng, sẽ được hiển thị trong `output`.
 
 ```plain
 scenarios: (100.00%) 1 scenario, 1 max VUs, 10m30s max duration (incl. graceful stop):
 ```
 
-An execution [scenario](https://k6.io/docs/misc/glossary/#scenario) is a set of instructions about running a test: what code should run, when and how often it should run, and other configurable parameters. In this case, your first test was executed using default parameters: one scenario, one [virtual user (VU)](https://k6.io/docs/misc/glossary/#virtual-user), and a max duration of 10 minutes and 30 seconds.
+Một kịch bản thực thi ([scenario](https://k6.io/docs/misc/glossary/#scenario)) là một tập hợp các hướng dẫn về việc chạy một bài kiểm tra: mã nào nên chạy, khi nào và tần suất chạy như thế nào, và các tham số có thể cấu hình khác. Trong trường hợp này, bài kiểm tra đầu tiên của bạn đã được thực thi bằng các tham số mặc định: một scenario, một [người dùng ảo (virtual user - VU)](https://k6.io/docs/misc/glossary/#virtual-user), và thời lượng tối đa là 10 phút 30 giây.
 
-The max duration is the execution time limit; it is the time beyond which the test will be forcibly stopped. In this case, k6 received a response to the request in the script long before this time period elapsed.
+Thời lượng tối đa (max duration) là giới hạn thời gian thực thi; đó là thời gian mà sau đó bài kiểm tra sẽ bị dừng cưỡng bức. Trong trường hợp này, k6 đã nhận được phản hồi cho yêu cầu trong kịch bản từ lâu trước khi khoảng thời gian này trôi qua.
 
-A [graceful stop](https://k6.io/docs/misc/glossary/#graceful-stop) is a period at the end of the test when k6 finishes any running [iterations](https://k6.io/docs/misc/glossary/#iteration), if possible. By default, k6 includes a graceful stop of 30 seconds within the max duration of 10 minutes and 30 seconds.
+[Graceful stop](https://k6.io/docs/misc/glossary/#graceful-stop) (dừng nhẹ nhàng) là một khoảng thời gian ở cuối bài kiểm tra khi k6 hoàn thành bất kỳ lần lặp ([iterations](https://k6.io/docs/misc/glossary/#iteration)) nào đang chạy, nếu có thể. Theo mặc định, k6 bao gồm một khoảng graceful stop là 30 giây trong tổng thời lượng tối đa là 10 phút 30 giây.
 
 ```plain
 * default: 1 iterations for each of 1 VUs (maxDuration: 10m0s, gracefulStop: 30s)
 ```
 
-`default` here refers to the scenario name. Since the test script did not have any explicitly set up, k6 used the default name.
+`default` ở đây đề cập đến tên của scenario. Vì kịch bản kiểm thử không thiết lập tên cụ thể nào, k6 đã sử dụng tên mặc định.
 
-An iteration is a single execution loop of the test. Load tests typically involve repeated execution loops within a certain amount of time so that requests are continuously made. Unless otherwise specified, k6 runs through the default function once.
+Một lần lặp (iteration) là một vòng lặp thực thi duy nhất của bài kiểm tra. Các bài kiểm thử tải thường bao gồm các vòng lặp thực thi lặp đi lặp lại trong một khoảng thời gian nhất định để các yêu cầu được thực hiện liên tục. Trừ khi có chỉ định khác, k6 sẽ chạy qua hàm mặc định một lần.
 
-Think of a virtual user as a single thread or instance that attempts to simulate a real end user of your application. In this case, k6 started one virtual user to run the test.
+Hãy coi một người dùng ảo (virtual user) như một luồng (thread) hoặc phiên bản duy nhất cố gắng mô phỏng một người dùng cuối thực sự của ứng dụng. Trong trường hợp này, k6 đã khởi chạy một người dùng ảo để chạy bài kiểm tra.
 
-### Console output
+### Đầu ra console (Console output)
 
-This section of the end-of-test summary is usually empty, but your test script included a line to save part of the response body to the console (`console.log(response.json().data);`). Here's what that looks like in the report:
+Phần này của tóm tắt kết thúc kiểm thử thường để trống, nhưng kịch bản kiểm thử của bạn có bao gồm một dòng để lưu một phần của thân phản hồi ra console (`console.log(response.json().data);`). Đây là giao diện của nó trong báo cáo:
 
 ```plain
 INFO[0001] Hello world!                                  source=console`
 ```
 
-The test script's target endpoint, `https://httpbin.test.k6.io/post` returns whatever was sent in the POST body, so this is a good sign! The target endpoint received the `Hello world!` that you sent in your script and sent the same body back.
+Endpoint mục tiêu của kịch bản kiểm thử, `https://httpbin.test.k6.io/post`, trả về bất cứ thứ gì đã được gửi trong phần thân POST, vì vậy đây là một dấu hiệu tốt! Endpoint mục tiêu đã nhận được chuỗi `Hello world!` mà bạn đã gửi trong kịch bản và gửi lại chính phần thân đó.
 
-If you had used multiple `console.log()` statements in the test script, they would all appear in this section.
+Nếu bạn đã sử dụng nhiều câu lệnh `console.log()` trong kịch bản kiểm thử, tất cả chúng sẽ xuất hiện trong phần này.
 
-### Execution summary
+### Tóm tắt thực thi (Execution summary)
 
-The execution summary shows an overview of what happened during the test run.
+Tóm tắt thực thi hiển thị cái nhìn tổng quan về những gì đã xảy ra trong quá trình chạy kiểm thử.
 
 ```plain
 running (00m00.7s), 0/1 VUs, 1 complete and 0 interrupted iterations
 default ✓ [======================================] 1 VUs  00m00.7s/10m0s  1/1 iters, 1 per VU
 ```
 
-In this case, the test ran for 0.7 seconds with 1 VU. A single iteration was executed and fully completed (i.e., it was not interrupted). 1 iteration per VU was executed (a total of 1).
+Trong trường hợp này, bài kiểm tra đã chạy trong 0,7 giây với 1 VU. Một lần lặp duy nhất đã được thực thi và hoàn thành đầy đủ (nghĩa là nó không bị gián đoạn). 1 lần lặp trên mỗi VU đã được thực thi (tổng cộng là 1).
 
-### k6 built-in metrics
+### Các chỉ số tích hợp của k6 (k6 built-in metrics)
 
-Now for the [metrics](https://k6.io/docs/misc/glossary/#metric)! k6 comes with [many built-in metrics](https://k6.io/docs/using-k6/metrics/#built-in-metrics).
+Bây giờ là các chỉ số ([metrics](https://k6.io/docs/misc/glossary/#metric))! k6 đi kèm với [nhiều chỉ số tích hợp sẵn](https://k6.io/docs/using-k6/metrics/#built-in-metrics).
 
 ```plain
      data_received..................: 5.9 kB 9.0 kB/s
@@ -135,88 +135,89 @@ Now for the [metrics](https://k6.io/docs/misc/glossary/#metric)! k6 comes with [
      iterations.....................: 1      1.525116/s
 ```
 
-The following metrics are usually the most important for test analysis.
+Các chỉ số sau đây thường là quan trọng nhất để phân tích kiểm thử.
 
-#### Response time
+#### Thời gian phản hồi (Response time)
 
 ```plain
 http_req_duration..............: avg=130.19ms min=130.19ms med=130.19ms max=130.19ms p(90)=130.19ms p(95)=130.19ms
 ```
 
-"Response time" can be vague, because it can be broken down into multiple components. However, in most cases, `http_req_duration` is the metric you're looking for. It includes:
-- `http_req_sending` (the time it took to send data to the target host)
-- `http_req_waiting` (Time to First Byte or "TTFB"; the time it took before the target server began to respond to the request)
-- `http_req_receiving` (the time it took for the target server to process and fully respond to k6)
+"Thời gian phản hồi" có thể mơ hồ, vì nó có thể được chia thành nhiều thành phần. Tuy nhiên, trong hầu hết các trường hợp, `http_req_duration` là chỉ số bạn đang tìm kiếm. Nó bao gồm:
 
-The response time in this line is reported as an average, minimum, median, maximum, 90th percentile, and 95th percentile, in milliseconds (ms). If you're not sure which to use, take the 95th percentile figure.
+- `http_req_sending` (thời gian gửi dữ liệu đến máy chủ mục tiêu)
+- `http_req_waiting` (Thời gian đến byte đầu tiên hoặc "TTFB"; thời gian chờ trước khi máy chủ mục tiêu bắt đầu phản hồi yêu cầu)
+- `http_req_receiving` (thời gian để máy chủ mục tiêu xử lý và phản hồi đầy đủ cho k6)
 
-A 95th percentile response time of 130.19 ms means that 95% of the requests had a response time of 130.19 ms or less. In this particular situation, however, your test script only made a single request, so all the metrics in this line are reporting the same value: 130.19 ms. When you run tests with multiple requests, you'll see a variation in these values.
+Thời gian phản hồi trong dòng này được báo cáo dưới dạng trung bình (avg), tối thiểu (min), trung vị (med), tối đa (max), phần trăm thứ 90 (p90) và phần trăm thứ 95 (p95), tính bằng mili giây (ms). Nếu bạn không chắc chắn nên sử dụng cái nào, hãy lấy con số phần trăm thứ 95 (95th percentile).
 
-Something to keep in mind here is that `http_req_duration` is the value for *all* requests, whether or not they passed. This behavior can cause misunderstandings when interpreting response times, because failed requests can often have a shorter or longer response time than successful ones.
+Thời gian phản hồi ở phần trăm thứ 95 là 130,19 ms có nghĩa là 95% các yêu cầu có thời gian phản hồi từ 130,19 ms trở xuống. Tuy nhiên, trong tình huống cụ thể này, kịch bản kiểm thử của bạn chỉ thực hiện một yêu cầu duy nhất, vì vậy tất cả các chỉ số trong dòng này đều báo cáo cùng một giá trị: 130,19 ms. Khi bạn chạy các bài kiểm tra với nhiều yêu cầu, bạn sẽ thấy sự thay đổi trong các giá trị này.
 
-The line below reports the response time for only the successful requests.
+Một điều cần lưu ý ở đây là `http_req_duration` là giá trị cho _tất cả_ các yêu cầu, bất kể chúng thành công hay thất bại. Hành vi này có thể gây ra hiểu lầm khi diễn giải thời gian phản hồi, vì các yêu cầu thất bại thường có thời gian phản hồi ngắn hơn hoặc dài hơn so với các yêu cầu thành công.
+
+Dòng dưới đây báo cáo thời gian phản hồi chỉ cho các yêu cầu thành công.
 
 ```plain
   { expected_response:true }...: avg=130.19ms min=130.19ms med=130.19ms max=130.19ms p(90)=130.19ms p(95)=130.19ms
 ```
 
-To improve accuracy and prevent failed requests from skewing results, use the 95th percentile value of the successful requests as a response time.
+Để tăng độ chính xác và ngăn các yêu cầu thất bại làm sai lệch kết quả, hãy sử dụng giá trị phần trăm thứ 95 của các yêu cầu thành công làm thời gian phản hồi.
 
-#### Error rate
+#### Tỷ lệ lỗi (Error rate)
 
-The `http_req_failed` metric describes the error rate for the test. The error rate is the number of requests that failed during the test as a percentage of the total requests.
+Chỉ số `http_req_failed` mô tả tỷ lệ lỗi của bài kiểm tra. Tỷ lệ lỗi là số lượng yêu cầu thất bại trong bài kiểm tra tính theo tỷ lệ phần trăm của tổng số yêu cầu.
 
 ```plain
 http_req_failed................: 0.00%  ✓ 0        ✗ 1
 ```
 
-`http_req_failed` automatically marks HTTP response codes of between 200 and 399. This means that HTTP 4xx and HTTP 5xx response codes are considered errors by k6 by default. (Note: This behavior can be changed using [`setResponseCallback`](https://k6.io/docs/javascript-api/k6-http/setresponsecallback-callback).)
+`http_req_failed` tự động đánh dấu các mã phản hồi HTTP từ 200 đến 399 là thành công. Điều này có nghĩa là các mã phản hồi HTTP 4xx và HTTP 5xx được k6 coi là lỗi theo mặc định. (Lưu ý: Hành vi này có thể được thay đổi bằng cách sử dụng [`setResponseCallback`](https://k6.io/docs/javascript-api/k6-http/setresponsecallback-callback).)
 
-This test run had an error rate of `0.00%`, because the single request it ran succeeded. It may seem counter-intuitive, but the `✓` on this line actually means that no requests had `http_req_failed = true`, meaning that there were no failures. Conversely, the `✗` means that 1 request had `http_req_failed = false`, meaning that it was successful.
+Lần chạy thử này có tỷ lệ lỗi là `0.00%`, vì yêu cầu duy nhất mà nó chạy đã thành công. Nghe có vẻ ngược với trực giác, nhưng dấu `✓` trên dòng này thực tế có nghĩa là không có yêu cầu nào có `http_req_failed = true`, nghĩa là không có lỗi nào. Ngược lại, dấu `✗` có nghĩa là có 1 yêu cầu có `http_req_failed = false`, nghĩa là nó đã thành công.
 
-#### Number of requests
+#### Số lượng yêu cầu (Number of requests)
 
-The number of total requests sent by all VUs during the test is described in the line below.
+Tổng số yêu cầu được gửi bởi tất cả các VU trong quá trình kiểm thử được mô tả trong dòng dưới đây.
 
 ```plain
 http_reqs......................: 1      1.525116/s
 ```
 
-Additionally, the number `1.525116/s` is the number of **requests per second (rps)** that the test executed throughout the test. In some tools, this is described as "test throughput". This helps you further quantify how much load your application experienced during the test.
+Ngoài ra, con số `1.525116/s` là số lượng **yêu cầu trên giây (requests per second - rps)** mà bài kiểm tra đã thực hiện trong suốt quá trình. Trong một số công cụ, điều này được mô tả là "throughput của bài kiểm tra". Điều này giúp bạn định lượng thêm mức tải mà ứng dụng của bạn đã trải qua trong quá trình kiểm thử.
 
-#### Iteration duration
+#### Thời lượng lần lặp (Iteration duration)
 
-`http_req_duration` measures the time taken for an HTTP request within the script to get a response from the server. But what if you have multiple HTTP requests strung together in a user flow, and you'd like to know how the entire flow would take for a user?
+`http_req_duration` đo thời gian cần thiết để một yêu cầu HTTP trong kịch bản nhận được phản hồi từ máy chủ. Nhưng nếu bạn có nhiều yêu cầu HTTP được xâu chuỗi với nhau trong một luồng người dùng (user flow) và bạn muốn biết toàn bộ luồng đó sẽ mất bao lâu đối với một người dùng?
 
-In that case, the iteration duration is the metric to look at.
+Trong trường hợp đó, thời lượng lần lặp (iteration duration) là chỉ số cần xem xét.
 
 ```plain
 iteration_duration.............: avg=654.72ms min=654.72ms med=654.72ms max=654.72ms p(90)=654.72ms p(95)=654.72ms
 ```
 
-The iteration duration is the amount of time it took for k6 to perform a single loop of your VU code. If your script included steps like logging in, browsing a product page, adding to a cart, and entering payment information, then the iteration duration gives you an idea of how long one of your application's users might take to purchase a product.
+Thời lượng lần lặp là khoảng thời gian k6 thực hiện một vòng lặp duy nhất mã VU của bạn. Nếu kịch bản của bạn bao gồm các bước như đăng nhập, duyệt trang sản phẩm, thêm vào giỏ hàng và nhập thông tin thanh toán, thì thời lượng lần lặp sẽ cho bạn biết một người dùng ứng dụng của bạn có thể mất bao lâu để mua một sản phẩm.
 
-This metric could be useful when you're trying to decide on what is an acceptable response time for each HTTP request. For example, perhaps the payment request takes 2 seconds, but if the total iteration duration is still only 3 seconds, you might decide that's acceptable anyway.
+Chỉ số này có thể hữu ích khi bạn đang cố gắng quyết định thời gian phản hồi chấp nhận được cho mỗi yêu cầu HTTP là bao nhiêu. Ví dụ, có thể yêu cầu thanh toán mất 2 giây, nhưng nếu tổng thời lượng lần lặp vẫn chỉ là 3 giây, bạn có thể quyết định rằng điều đó vẫn có thể chấp nhận được.
 
-Like the other metrics, the iteration duration is expressed in terms of the average, minimum, median, maximum, 90th percentile, and 95th percentile times, in milliseconds.
+Giống như các chỉ số khác, thời lượng lần lặp được thể hiện dưới dạng các mốc thời gian trung bình, tối thiểu, trung vị, tối đa, phần trăm thứ 90 và phần trăm thứ 95, tính bằng mili giây.
 
-#### Number of iterations
+#### Số lần lặp (Number of iterations)
 
-The number of iterations describes how many times k6 looped through your script in total, including the iterations for all VUs. This metric can be useful when you want to verify some output associated with each iteration, such as an account signup.
+Số lần lặp mô tả tổng số lần k6 đã lặp qua kịch bản của bạn, bao gồm các lần lặp của tất cả các VU. Chỉ số này có thể hữu ích khi bạn muốn xác minh một số đầu ra liên quan đến mỗi lần lặp, chẳng hạn như việc đăng ký tài khoản.
 
 ```plain
 iterations.....................: 1      1.525116/s
 ```
 
-The number `1.525116/s` on the same line is the **iterations per second**. It describes the rate at which k6 did full iterations through the script. This, like [requests per second](03-Understanding-k6-results.md#Number-of-requests), is a measure of the speed or rate at which k6 sent messages to the application server.
+Con số `1.525116/s` trên cùng dòng là **số lần lặp trên giây**. Nó mô tả tốc độ mà k6 thực hiện các lần lặp đầy đủ qua kịch bản. Chỉ số này, giống như [yêu cầu trên giây](03-Understanding-k6-results.md#Number-of-requests), là thước đo tốc độ mà k6 gửi thông điệp đến máy chủ ứng dụng.
 
-## Next up
+## Tiếp theo
 
-Logging the response bodies of requests to the console might be good when troubleshooting, but what if you just want to verify the response automatically, without having to check the log? In the next section, you'll learn about checks.
+Việc ghi lại thân phản hồi của các yêu cầu ra console có thể hữu ích khi khắc phục sự cố, nhưng nếu bạn chỉ muốn xác minh phản hồi một cách tự động mà không cần phải kiểm tra nhật ký thì sao? Trong phần tiếp theo, bạn sẽ tìm hiểu về các phép kiểm tra (checks).
 
-## Test your knowledge
+## Kiểm tra kiến thức của bạn
 
-To answer the following questions, refer to the sample end-of-test summary report below.
+Để trả lời các câu hỏi sau, hãy tham khảo báo cáo tóm tắt kết thúc kiểm thử mẫu bên dưới.
 
 ```plain
           /\      |‾‾| /‾‾/   /‾‾/
@@ -254,10 +255,9 @@ default ✓ [======================================] 10 VUs  2m0s
      vus_max........................: 10     min=10      max=10
 ```
 
+### Câu hỏi 1
 
-### Question 1
-
-Which of the following is the best value to use as the response time for all HTTP requests?
+Giá trị nào sau đây là tốt nhất để sử dụng làm thời gian phản hồi cho tất cả các yêu cầu HTTP?
 
 A: 131.04 ms
 
@@ -265,9 +265,9 @@ B: 122.08 ms
 
 C: 4.46 ms
 
-### Question 2
+### Câu hỏi 2
 
-How many virtual users did this test execute?
+Bài kiểm tra này đã thực thi bao nhiêu người dùng ảo (virtual users)?
 
 A: 9463
 
@@ -275,10 +275,9 @@ B: 1
 
 C: 10
 
+### Câu hỏi 3
 
-### Question 3
-
-How many requests failed?
+Có bao nhiêu yêu cầu đã thất bại?
 
 A: 0
 
@@ -286,8 +285,8 @@ B: 9463
 
 C: 10
 
-### Answers
+### Đáp án
 
-1. A. B refers to `http_req_waiting`, which is only a component of the response time. C refers to `http_req_blocked`, which refers to the time spent waiting for a TCP connection to be established before sending the request. A is the 95th percentile value for `http_req_duration`, which is the best metric to use for response time.
-2. C. The number of VUs is listed in the second to the last row in the results, and is 10 in this case.
-3. A. In the line with the metric `http_req_failed`, the `0.00%  ✓ 0` refers to the number of responses with errors. That is, how many of the requests had `http_req_failed` set to `true`. 9463 is the number of requests that passed, or had `http_req_failed` set to `false`. The correct answer is A, 0. None of the requests failed, and the test ha a 0% error rate.
+1. A. B đề cập đến `http_req_waiting`, vốn chỉ là một thành phần của thời gian phản hồi. C đề cập đến `http_req_blocked`, tức là thời gian chờ để thiết lập kết nối TCP trước khi gửi yêu cầu. A là giá trị phần trăm thứ 95 cho `http_req_duration`, đây là chỉ số tốt nhất để sử dụng cho thời gian phản hồi.
+2. C. Số lượng VU được liệt kê ở hàng thứ hai từ dưới lên trong kết quả, và trong trường hợp này là 10.
+3. A. Trong dòng có chỉ số `http_req_failed`, phần `0.00% ✓ 0` đề cập đến số lượng phản hồi có lỗi. Nghĩa là, có bao nhiêu yêu cầu có `http_req_failed` được đặt thành `true`. 9463 là số lượng yêu cầu đã vượt qua, hoặc có `http_req_failed` được đặt thành `false`. Đáp án đúng là A, 0. Không có yêu cầu nào thất bại và bài kiểm tra có tỷ lệ lỗi là 0%.

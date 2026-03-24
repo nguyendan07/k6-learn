@@ -1,14 +1,14 @@
-Checks are a type of testing criteria that can be used to verify the response returned by a request.
+Checks là một loại tiêu chí kiểm thử có thể được sử dụng để xác minh phản hồi được trả về bởi một yêu cầu (request).
 
-Up until now, you've been using `console.log()` to print the response body to the terminal. This approach is useful for debugging, but it can quickly get out of hand if the response body is large or if you decide to run the test with more than one VU. Instead, in this section, you'll learn how to use checks.
+Cho đến bây giờ, bạn đã sử dụng `console.log()` để in thân phản hồi (response body) ra terminal. Cách tiếp cận này hữu ích cho việc gỡ lỗi (debugging), nhưng nó có thể nhanh chóng trở nên mất kiểm soát nếu thân phản hồi lớn hoặc nếu bạn quyết định chạy bài kiểm tra với nhiều hơn một VU. Thay vào đó, trong phần này, bạn sẽ học cách sử dụng các checks.
 
-## How to add checks to your script
+## Cách thêm các checks vào kịch bản của bạn
 
-Back to the script!
+Quay lại với kịch bản!
 
-You already know the expected response of the target server to the request the script is sending: it should send back whatever the script sends to it. In this case, that's `Hello world!`
+Bạn đã biết phản hồi dự kiến của máy chủ mục tiêu đối với yêu cầu mà kịch bản đang gửi: nó sẽ gửi lại bất cứ thứ gì kịch bản gửi cho nó. Trong trường hợp này, đó là `Hello world!`
 
-So, remove the `console.log()` statement and add a check by copying this code snippet:
+Vì vậy, hãy xóa câu lệnh `console.log()` và thêm một check bằng cách sao chép đoạn mã này:
 
 ```js
 import http from 'k6/http';
@@ -23,13 +23,13 @@ export default function() {
 }
 ```
 
-Note that you need to import the `check` from the k6 library:
+Lưu ý rằng bạn cần nhập `check` từ thư viện k6:
 
 ```js
 import { check } from 'k6';
 ```
 
-And you need to put the actual check in the default function:
+Và bạn cần đặt check thực tế vào trong hàm mặc định:
 
 ```js
 check(response, {
@@ -38,17 +38,17 @@ check(response, {
 }
 ```
 
-The check you've just added looks for the string `Hello world!` in the body of the response of *every* request.
+Check mà bạn vừa thêm sẽ tìm kiếm chuỗi `Hello world!` trong thân của phản hồi của _mọi_ yêu cầu.
 
-### Running the script
+### Chạy kịch bản
 
-What does it look like in the end-of-test summary? Save your script and run:
+Nó trông như thế nào trong tóm tắt kết thúc kiểm thử? Lưu kịch bản của bạn và chạy:
 
 ```plain
 k6 run test.js
 ```
 
-and you should see output similar to this:
+và bạn sẽ thấy đầu ra tương tự như thế này:
 
 ```plain
           /\      |‾‾| /‾‾/   /‾‾/   
@@ -73,13 +73,13 @@ default ✓ [======================================] 1 VUs  00m00.7s/10m0s  1/1 
      checks.........................: 100.00% ✓ 1        ✗ 0
      data_received..................: 5.9 kB  8.4 kB/s
      data_sent......................: 564 B   801 B/s
-     http_req_blocked...............: avg=582.6ms  min=582.6ms  med=582.6ms  max=582.6ms  p(90)=582.6ms  p(95)=582.6ms 
+     http_req_blocked...............: avg=582.6ms  min=582.6ms  med=582.6ms  max=582.6ms  p(90)=582.6ms  p(95)=582.6ms
      http_req_connecting............: avg=121.14ms min=121.14ms med=121.14ms max=121.14ms p(90)=121.14ms p(95)=121.14ms
      http_req_duration..............: avg=120.62ms min=120.62ms med=120.62ms max=120.62ms p(90)=120.62ms p(95)=120.62ms
        { expected_response:true }...: avg=120.62ms min=120.62ms med=120.62ms max=120.62ms p(90)=120.62ms p(95)=120.62ms
      http_req_failed................: 0.00%   ✓ 0        ✗ 1
-     http_req_receiving.............: avg=72µs     min=72µs     med=72µs     max=72µs     p(90)=72µs     p(95)=72µs    
-     http_req_sending...............: avg=292µs    min=292µs    med=292µs    max=292µs    p(90)=292µs    p(95)=292µs   
+     http_req_receiving.............: avg=72µs     min=72µs     med=72µs     max=72µs     p(90)=72µs     p(95)=72µs
+     http_req_sending...............: avg=292µs    min=292µs    med=292µs    max=292µs    p(90)=292µs    p(95)=292µs
      http_req_tls_handshaking.......: avg=405.16ms min=405.16ms med=405.16ms max=405.16ms p(90)=405.16ms p(95)=405.16ms
      http_req_waiting...............: avg=120.26ms min=120.26ms med=120.26ms max=120.26ms p(90)=120.26ms p(95)=120.26ms
      http_reqs......................: 1       1.419825/s
@@ -87,7 +87,7 @@ default ✓ [======================================] 1 VUs  00m00.7s/10m0s  1/1 
      iterations.....................: 1       1.419825/s
 ```
 
-The new check is displayed in the lines:
+Check mới được hiển thị trong các dòng:
 
 ```plain
 	✓ Application says hello
@@ -95,13 +95,13 @@ The new check is displayed in the lines:
      checks.........................: 100.00% ✓ 1        ✗ 0
 ```
 
-and the `✓` means that all the requests executed (just one in this test run) passed the check. This test run had a 100% pass rate for checks.
+và dấu `✓` có nghĩa là tất cả các yêu cầu đã thực thi (chỉ một yêu cầu trong lần chạy thử này) đã vượt qua check. Lần chạy thử này có tỷ lệ vượt qua check là 100%.
 
-### Failed checks
+### Các checks bị thất bại
 
-What does it look like when the check fails?
+Nó trông như thế nào khi check thất bại?
 
-Modify the script to search for text that shouldn't be found in the response, like so:
+Sửa đổi kịch bản để tìm kiếm văn bản không có trong phản hồi, như sau:
 
 ```js
 import http from 'k6/http';
@@ -116,7 +116,7 @@ export default function() {
 }
 ```
 
-Run that, and you should get the following result:
+Chạy kịch bản đó, và bạn sẽ nhận được kết quả sau:
 
 ```plain
      ✗ Application says hello
@@ -125,49 +125,47 @@ Run that, and you should get the following result:
      checks.........................: 0.00%  ✓ 0        ✗ 1
 ```
 
-This time, the `✗ 1` indicates that one check failed.
+Lần này, dấu `✗ 1` cho biết một check đã thất bại.
 
-### Failed checks are not errors
+### Các checks thất bại không phải là lỗi
 
-You may have noticed that in the last example, `http_req_failed`, or the HTTP error rate, was not affected by the failing check. This is because checks do not stop a script from executing successfully, and they do not return a failed exit status.
+Bạn có thể nhận thấy rằng trong ví dụ cuối cùng, `http_req_failed`, hoặc tỷ lệ lỗi HTTP, không bị ảnh hưởng bởi check bị thất bại. Điều này là do các checks không ngăn một kịch bản thực thi thành công và chúng không trả về một trạng thái thoát (exit status) thất bại.
 
-> :bulb: To make failing checks stop your test, you can [combine them with thresholds](https://k6.io/docs/using-k6/thresholds/#failing-a-load-test-using-checks).
+> :bulb: Để làm cho các checks thất bại dừng bài kiểm tra của bạn, bạn có thể [kết hợp chúng với các ngưỡng (thresholds)](https://k6.io/docs/using-k6/thresholds/#failing-a-load-test-using-checks).
 
-## Other types of checks
+## Các loại checks khác
 
-The [checks](https://k6.io/docs/using-k6/checks/) page contains other types of checks you can do, including the HTTP response code and the response body size. You can also include multiple checks for a single response.
+Trang [checks](https://k6.io/docs/using-k6/checks/) chứa các loại checks khác mà bạn có thể thực hiện, bao gồm mã phản hồi HTTP và kích thước thân phản hồi. Bạn cũng có thể bao gồm nhiều checks cho một phản hồi duy nhất.
 
-## Next up
+## Tiếp theo
 
-You're almost ready to scale up your test to multiple users! Before you do so, the next section discusses how to make your test realistic with think time.
+Bạn đã gần sẵn sàng để mở rộng quy trình kiểm thử của mình cho nhiều người dùng! Trước khi thực hiện, phần tiếp theo sẽ thảo luận về cách làm cho bài kiểm tra của bạn thực tế hơn với think time.
 
-## Test your knowledge
+## Kiểm tra kiến thức của bạn
 
-### Question 1
+### Câu hỏi 1
 
-Which of the following can you use a check to verify?
+Bạn có thể sử dụng check để xác minh điều nào sau đây?
 
-A: Whether the 95th percentage response time of the request was greater than 1s
+A: Liệu thời gian phản hồi ở phần trăm thứ 95 của yêu cầu có lớn hơn 1 giây hay không
 
-B: The size of the response body returned
+B: Kích thước của thân phản hồi được trả về
 
-C: The error rate of the test
+C: Tỷ lệ lỗi của bài kiểm tra
 
+### Câu hỏi 2
 
-### Question 2
+Các checks đánh giá phần nào của bài kiểm tra?
 
-What part of the test do checks assess?
+A: Thời gian phản hồi của một yêu cầu
 
-A: The response time of a request
+B: Cú pháp của yêu cầu được gửi đến ứng dụng
 
-B: The syntax of the request sent to the application
+C: Phản hồi của máy chủ ứng dụng
 
-C: The application server's response
+### Câu hỏi 3
 
-
-### Question 3
-
-In the following snippet from the end-of-test summary, how many checks failed?
+Trong đoạn trích sau từ tóm tắt kết thúc kiểm thử, có bao nhiêu checks đã thất bại?
 
 ```plain
      ✗ Application says hello
@@ -182,8 +180,8 @@ B: 1215
 
 C: 1144
 
-### Answer
+### Đáp án
 
-1. B. The 95th percentile of the response time is an aggregated metric: it relies on measurements from all requests up to that point. This is not something you can create a check for, although you can certainly include this as a [threshold](https://k6.io/docs/using-k6/thresholds/) in your script. The error rate of a test is similarly aggregated. B, the size of the response body, is the correct answer.
-2. C. Checks parse the responses from the application server, not the request sent by k6.
-3. C. The number of checks that failed is displayed in  `✗ 1144`. This request's checks passed 51.50% of the time.
+1. B. Phần trăm thứ 95 của thời gian phản hồi là một chỉ số tổng hợp: nó dựa trên các phép đo từ tất cả các yêu cầu cho đến thời điểm đó. Đây không phải là thứ bạn có thể tạo check, mặc dù bạn chắc chắn có thể đưa nó vào như một [ngưỡng (threshold)](https://k6.io/docs/using-k6/thresholds/) trong kịch bản của mình. Tỷ lệ lỗi của một bài kiểm tra cũng được tổng hợp tương tự. B, kích thước của thân phản hồi, là câu trả lời đúng.
+2. C. Các checks phân tích các phản hồi từ máy chủ ứng dụng, không phải yêu cầu được gửi bởi k6.
+3. C. Số lượng các checks thất bại được hiển thị ở `✗ 1144`. Các checks của yêu cầu này đã vượt qua 51.50% số lần.

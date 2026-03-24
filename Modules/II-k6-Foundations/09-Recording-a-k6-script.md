@@ -1,86 +1,89 @@
-You've already learned how to [write your first k6 script](01-Getting-started-with-k6-OSS.md). Why would you want to _record_ one?
+Bạn đã học cách [viết kịch bản k6 đầu tiên](01-Getting-started-with-k6-OSS.md). Tại sao bạn lại muốn _ghi lại_ (record) một kịch bản?
 
-Writing a k6 script yourself is the best way to learn how k6 works, and the skills that you've learned in previous sections will make you a better tester because even recorded scripts will need to be modified. Writing a k6 script may still be the better option in these situations:
-- You want your script to make a series of API calls.
-- Your test targets a specific component or group of components, rather than generating load from the client side.
-- The API endpoints you want to test are well-documented, or you already have prior knowledge about them.
-- The flow you're simulating cannot be easily simulated from a browser.
+Tự mình viết kịch bản k6 là cách tốt nhất để tìm hiểu cách k6 hoạt động, và những kỹ năng bạn đã học trong các phần trước sẽ giúp bạn trở thành một người kiểm thử giỏi hơn vì ngay cả các kịch bản được ghi lại cũng cần được sửa đổi. Viết kịch bản k6 thủ công vẫn có thể là lựa chọn tốt hơn trong các tình huống sau:
 
-However, there are also situations where recording a script may save time:
-- You are testing a web page and want to include requests for embedded resources on a page (scripts and images), rather than just the HTML.
-- The application involves a lot of [dynamic correlation](../III-k6-Intermediate/02-Dynamic-correlation-in-k6.md), and you want most of that work done for you.
-- You aren't sure what the underlying HTTP requests are, or the API isn't well-documented.
+- Bạn muốn kịch bản của mình thực hiện một chuỗi các cuộc gọi API.
+- Bài kiểm tra của bạn nhắm vào một thành phần hoặc nhóm thành phần cụ thể, thay vì tạo tải từ phía máy khách (client side).
+- Các endpoint của API bạn muốn kiểm thử đã được tài liệu hóa tốt, hoặc bạn đã có kiến thức trước đó về chúng.
+- Luồng (flow) bạn đang mô phỏng không thể dễ dàng mô phỏng từ trình duyệt.
 
-In this section, you'll learn how to record a k6 script.
+Tuy nhiên, cũng có những tình huống mà việc ghi lại một kịch bản có thể tiết kiệm thời gian:
 
-## Creating a k6 Cloud account
+- Bạn đang kiểm thử một trang web và muốn bao gồm các yêu cầu cho các tài nguyên nhúng trên trang (scripts và hình ảnh), thay vì chỉ có mã HTML.
+- Ứng dụng liên quan đến rất nhiều [tương quan động (dynamic correlation)](../III-k6-Intermediate/02-Dynamic-correlation-in-k6.md), và bạn muốn hầu hết công việc đó được thực hiện tự động cho mình.
+- Bạn không chắc chắn các yêu cầu HTTP bên dưới là gì, hoặc API không được tài liệu hóa tốt.
 
-Did you know that you can use k6 Cloud's script-recording features for free?
+Trong phần này, bạn sẽ học cách ghi lại một kịch bản k6.
 
-Though recording a k6 script requires a k6 Cloud account, it doesn't require a paid subscription, and you don't need to enter credit card details. To get started, [sign up for an account](https://app.k6.io/). Make sure you're signed in before you proceed.
+## Tạo tài khoản k6 Cloud
 
-Next, download and install the k6 browser recording extension for your browser-- [Chrome](https://chrome.google.com/webstore/detail/k6-browser-recorder/phjdhndljphphehjpgbmpocddnnmdbda?hl=en) and [Firefox](https://addons.mozilla.org/en-US/firefox/addon/k6-browser-recorder/) are supported. When you see the k6 icon on your extension bar, you're ready to start recording.
+Bạn có biết rằng bạn có thể sử dụng các tính năng ghi kịch bản của k6 Cloud miễn phí không?
+
+Mặc dù việc ghi lại một kịch bản k6 yêu cầu tài khoản k6 Cloud, nhưng nó không yêu cầu đăng ký trả phí và bạn không cần nhập chi tiết thẻ tín dụng. Để bắt đầu, hãy [đăng ký một tài khoản](https://app.k6.io/). Hãy đảm bảo bạn đã đăng nhập trước khi tiếp tục.
+
+Tiếp theo, hãy tải xuống và cài đặt tiện ích mở rộng ghi trình duyệt k6 cho trình duyệt của bạn-- [Chrome](https://chrome.google.com/webstore/detail/k6-browser-recorder/phjdhndljphphehjpgbmpocddnnmdbda?hl=en) và [Firefox](https://addons.mozilla.org/en-US/firefox/addon/k6-browser-recorder/) đều được hỗ trợ. Khi bạn nhìn thấy biểu tượng k6 trên thanh tiện ích mở rộng, bạn đã sẵn sàng để bắt đầu ghi.
 
 ![](../../images/browser-extension-icon.png)
 
-Then, open up a new tab and click on the k6 browser extension icon. You'll see a dialog box with some initial options:
+Sau đó, hãy mở một tab mới và nhấp vào biểu tượng tiện ích mở rộng trình duyệt k6. Bạn sẽ thấy một hộp thoại với một số tùy chọn ban đầu:
 
 ![k6-browser-recorder-01](../../images/k6-browser-recorder-01.png)
-Here's what those options mean:
-- **Download HAR file**: HAR stands for HTTP ARchive, which is a JSON-formatted file that saves network information like HTTP requests and timings. **Enable this if you'd like to be able to save the recording somewhere other than k6**. 
-- **Clear cache (last 7 days):** Enabling this deletes your browser cache for the last week. This is useful if what you want to simulate a new user to your application. **Disable this if you want to simulate an existing user.** 
--  Read more about [caching options](../XX-Future-Ideas/Caching-options.md).
-- **Correlate request/response data:** The k6 recorder can automatically detect when dynamic values are being passed to the application servers and try to correlate them for you. This doesn't always work for complex applications, but it can be a good starting point for scripting. **Enable this option unless you'd prefer to have a raw recording**.
+Dưới đây là ý nghĩa của các tùy chọn đó:
 
-Next, click the _Start recording_ button. It may take a few seconds for your last week's browser cache to be deleted. Wait until you see the following screen:
+- **Download HAR file**: HAR là viết tắt của HTTP ARchive, đây là một tệp định dạng JSON lưu thông tin mạng như các yêu cầu HTTP và thời gian. **Bật tùy chọn này nếu bạn muốn lưu bản ghi ở một nơi khác ngoài k6**.
+- **Clear cache (last 7 days):** Bật tùy chọn này sẽ xóa bộ nhớ đệm trình duyệt của bạn trong tuần qua. Điều này hữu ích nếu bạn muốn mô phỏng một người dùng mới đối với ứng dụng của mình. **Tắt tùy chọn này nếu bạn muốn mô phỏng một người dùng hiện tại.**
+- Đọc thêm về [các tùy chọn lưu bộ nhớ đệm (caching options)](../XX-Future-Ideas/Caching-options.md).
+- **Correlate request/response data:** Trình ghi k6 có thể tự động phát hiện khi các giá trị động đang được truyền đến máy chủ ứng dụng và cố gắng tương quan chúng cho bạn. Điều này không phải lúc nào cũng hoạt động đối với các ứng dụng phức tạp, nhưng nó có thể là một điểm bắt đầu tốt để viết kịch bản. **Bật tùy chọn này trừ khi bạn muốn có một bản ghi thô (raw recording)**.
 
+Tiếp theo, nhấp vào nút _Start recording_. Có thể mất vài giây để bộ nhớ đệm trình duyệt của tuần trước bị xóa. Hãy đợi cho đến khi bạn thấy màn hình sau:
 
 ![k6-browser-recorder-02](../../images/k6-browser-recorder-02.png)
 
-Now you're ready to start recording! Navigate to your web application, and interact with it the way one of your users would.
+Bây giờ bạn đã sẵn sàng để bắt đầu ghi! Hãy điều hướng đến ứng dụng web của bạn và tương tác với nó theo cách mà một trong những người dùng của bạn sẽ làm.
 
-### Tips for recording
+### Mẹo khi ghi hình (recording)
 
-To make the best of your recording, keep the following tips in mind:
-- If you'd like to get an idea of how long the [sleep](05-Adding-think-time-using-sleep.md) should be, try filling out forms and reading text the way a new user would. Sleep timings are recorded by the extension.
-- Wait for all the page's resources to load before you proceed to the next page or action. If you'd like to be sure, try opening up DevTools for your browser and waiting until there is no activity in the Network tab.
-- Take notes separately about the actions you're doing, to help you make sense of the generated script later.
-- Record one business flow at a time. If you record multiple long or complex flows, your script may get too large and unwieldy. It's easier to combine multiple scripts than it is to split them apart later.
+Để tận dụng tốt nhất bản ghi của bạn, hãy ghi nhớ các mẹo sau:
 
-## Saving the recorded script to k6 Cloud
+- Nếu bạn muốn biết thời gian [sleep](05-Adding-think-time-using-sleep.md) nên là bao lâu, hãy thử điền vào các biểu mẫu và đọc văn bản theo cách mà một người dùng mới sẽ làm. Thời gian sleep được ghi lại bởi tiện ích mở rộng.
+- Chờ tất cả các tài nguyên của trang tải xong trước khi bạn tiếp tục sang trang hoặc hành động tiếp theo. Nếu bạn muốn chắc chắn, hãy thử mở DevTools của trình duyệt và đợi cho đến khi không còn hoạt động nào trong tab Network.
+- Ghi chú riêng về các hành động bạn đang làm, để giúp bạn hiểu kịch bản được tạo ra sau này.
+- Ghi lại từng luồng nghiệp vụ (business flow) một. Nếu bạn ghi lại nhiều luồng dài hoặc phức tạp, kịch bản của bạn có thể trở nên quá lớn và khó quản lý. Việc kết hợp nhiều kịch bản sẽ dễ dàng hơn là chia nhỏ chúng sau này.
 
-When you're done, click _Stop_ on the browser recorder. You will be automatically redirected to your k6 Cloud account:
+## Lưu kịch bản đã ghi vào k6 Cloud
+
+Khi bạn hoàn tất, hãy nhấp vào _Stop_ trên trình ghi trình duyệt. Bạn sẽ tự động được chuyển hướng đến tài khoản k6 Cloud của mình:
 
 ![](../../images/k6-browser-recorder-3.png)
 
 ![](../../images/k6-browser-recorder-4.png)
 
-Let's go over the options!
+Hãy cùng xem qua các tùy chọn!
 
-- **Project:** In this dropdown menu, you can select which k6 Cloud project you'd like to save this recording to. If you haven't created any projects yet, you'll see the _Default_ project selected.
-- **Title:** Next to the project selection dropdown, give your recording a descriptive name that will help you remember what this recording was later.
-- **Test Builder or Script Editor:** Decide whether you'd like to see your recorded flow in the Test Builder (GUI) or the Script Editor (plain JavaScript). You'll learn more about these options later. For now, choose Test Builder if you'd be more comfortable interacting with an interface, and the Script Editor if you'd prefer to see the code. If you're not sure, choose Test Builder and you'll be able to switch to the Script Editor later if you change your mind.
-- **Correlate request and response data:** Tick this option if you'd like k6 to detect and correlate dynamic data for you.
-- **Include static assets:** Tick this option if you'd like your test script to include requests for embedded resources like scripts, fonts, and images. Ticking this option makes the script more [realistic](../III-k6-Intermediate/03-Workload-modeling.md) at the cost of more requests.
-- **Generate sleep**: Tick this option if you'd like k6 to [add think time](05-Adding-think-time-using-sleep.md) based on your actual delays while recording.
-- **Third-party domains filtering:** By default, k6 ignores requests sent to domains other than the one you initially navigated to. Doing so prevents you from accidentally load testing servers that don't belong to you. Have a look at the domains listed, and tick any that you'd like to include in the test. _Note: Testing servers you don't own could lead to legal or financial ramifications, so we recommend you test only servers you own._
+- **Project:** Trong menu thả xuống này, bạn có thể chọn dự án k6 Cloud nào bạn muốn lưu bản ghi này vào. Nếu bạn chưa tạo bất kỳ dự án nào, bạn sẽ thấy dự án _Default_ được chọn.
+- **Title:** Bên cạnh menu thả xuống chọn dự án, hãy đặt cho bản ghi của bạn một cái tên mô tả để giúp bạn nhớ bản ghi này là gì sau này.
+- **Test Builder hoặc Script Editor:** Quyết định xem bạn muốn xem luồng đã ghi của mình trong Test Builder (giao diện đồ họa) hay Script Editor (JavaScript thuần túy). Bạn sẽ tìm hiểu thêm về các tùy chọn này sau. Hiện tại, hãy chọn Test Builder nếu bạn cảm thấy thoải mái hơn khi tương tác với giao diện, và Script Editor nếu bạn muốn xem mã nguồn. Nếu bạn không chắc chắn, hãy chọn Test Builder và bạn sẽ có thể chuyển sang Script Editor sau nếu bạn đổi ý.
+- **Correlate request and response data:** Đánh dấu tùy chọn này nếu bạn muốn k6 phát hiện và tương quan dữ liệu động cho bạn.
+- **Include static assets:** Đánh dấu tùy chọn này nếu bạn muốn kịch bản kiểm thử của mình bao gồm các yêu cầu cho các tài nguyên nhúng như scripts, fonts, và hình ảnh. Đánh dấu tùy chọn này giúp kịch bản trở nên [thực tế hơn](../III-k6-Intermediate/03-Workload-modeling.md) nhưng phải đánh đổi bằng việc có nhiều yêu cầu hơn.
+- **Generate sleep**: Đánh dấu tùy chọn này nếu bạn muốn k6 [thêm think time](05-Adding-think-time-using-sleep.md) dựa trên sự chậm trễ thực tế của bạn trong khi ghi.
+- **Third-party domains filtering:** Theo mặc định, k6 bỏ qua các yêu cầu được gửi đến các tên miền khác với tên miền bạn điều hướng ban đầu. Làm như vậy sẽ ngăn bạn vô tình kiểm thử tải các máy chủ không thuộc sở hữu của bạn. Hãy xem qua các tên miền được liệt kê và đánh dấu bất kỳ tên miền nào bạn muốn bao gồm trong bài kiểm tra. _Lưu ý: Việc kiểm thử các máy chủ bạn không sở hữu có thể dẫn đến các rắc rối về pháp lý hoặc tài chính, vì vậy chúng tôi khuyên bạn chỉ nên kiểm thử các máy chủ bạn sở hữu._
 
-Then, click Save!
+Sau đó, nhấp vào Save!
 
-If you switched to the Script Editor from Test Builder, your script will be displayed in _read only_ mode:
+Nếu bạn chuyển sang Script Editor từ Test Builder, kịch bản của bạn sẽ được hiển thị ở chế độ _chỉ đọc_ (read only):
 
 ![](../../images/k6-cloud-script-editor-from-recording.png)
 
-Click _COPY SCRIPT_, as highlighted in orange in the screenshot, to select and copy the entire script. You can then paste the script into your IDE and [run your script locally](01-Getting-started-with-k6-OSS.md#Hello-World-running-your-k6-script).
+Nhấp vào _COPY SCRIPT_, như được đánh dấu màu cam trong ảnh chụp màn hình, để chọn và sao chép toàn bộ kịch bản. Sau đó, bạn có thể dán kịch bản vào IDE của mình và [chạy kịch bản cục bộ](01-Getting-started-with-k6-OSS.md#Hello-World-running-your-k6-script).
 
-If, instead, you chose the _Script Editor_ option in the recording dialog screen earlier, you'll see your test script displayed in k6 Cloud in an editable mode. 
+Nếu thay vào đó, bạn đã chọn tùy chọn _Script Editor_ trong hộp thoại ghi trước đó, bạn sẽ thấy kịch bản kiểm thử của mình được hiển thị trong k6 Cloud ở chế độ có thể chỉnh sửa.
 
 ![](../../images/k6-cloud-script-editor.png)
 
-You can modify the script here, or click the _COPY SCRIPT_ button to select all the text in your script. You can then paste the script into your IDE of choice and continue working on it there.
+Bạn có thể sửa đổi kịch bản tại đây, hoặc nhấp vào nút _COPY SCRIPT_ để chọn toàn bộ văn bản trong kịch bản của bạn. Sau đó, bạn có thể dán kịch bản vào IDE bạn chọn và tiếp tục làm việc với nó ở đó.
 
 <details>
-<summary> Example recorded script </summary>
+<summary> Ví dụ kịch bản được ghi lại </summary>
 
 ```js
 // Scenario: Scenario_1 (executor: ramping-vus)
@@ -663,70 +666,73 @@ export function scenario_1() {
   })
 }
 ```
+
 </details>
 
 ### Test Builder
 
-If you chose the Test Builder option in the previous step, you'll see a screen like this:
+Nếu bạn chọn tùy chọn Test Builder ở bước trước, bạn sẽ thấy một màn hình như thế này:
 
 ![](../../images/k6-browser-recorder-5.png)
 
-From here, you can continue to explore, build out your script, and ramp it up to run as a shakeout or load test. You can find out more information about [using the Test Builder here](../XX-Future-Ideas/Creating-a-script-using-the-Test-Builder.md). However, keep in mind that running the test on k6 Cloud will use up one of your free test runs. If you'd like to run the test locally, click on the toggle to switch from _Builder_ to _Script_.
+Từ đây, bạn có thể tiếp tục khám phá, xây dựng kịch bản của mình và tăng tốc nó để chạy như một bài kiểm tra sàng lọc (shakeout) hoặc kiểm thử tải. Bạn có thể tìm thêm thông tin về [cách sử dụng Test Builder tại đây](../XX-Future-Ideas/Creating-a-script-using-the-Test-Builder.md). Tuy nhiên, hãy nhớ rằng việc chạy bài kiểm tra trên k6 Cloud sẽ tiêu tốn một trong những lượt chạy thử miễn phí của bạn. Nếu bạn muốn chạy bài kiểm tra cục bộ, hãy nhấp vào nút gạt để chuyển từ _Builder_ sang _Script_.
 
-## Limitations to recording a script
+## Hạn chế của việc ghi lại một kịch bản
 
-In this section, you learned how to use the free version of k6 Cloud to record a business flow in your browser and generate a k6 script from the recording. Generating a script this way can lead to significantly less ramp-up time when you're beginning the scripting process.
+Trong phần này, bạn đã học cách sử dụng phiên bản miễn phí của k6 Cloud để ghi lại một luồng nghiệp vụ trong trình duyệt của mình và tạo kịch bản k6 từ bản ghi đó. Việc tạo kịch bản theo cách này có thể giúp giảm đáng kể thời gian chuẩn bị khi bạn bắt đầu quá trình viết kịch bản.
 
-However, recording a script also has the following limitations:
-- You can only record user flows that involve actions you can carry out in a web browser.
-- The automatic request and response correlation only works for commonly used dynamic values.
-- The recorder saves all the information your browser sends and receives, which may lead to increased noise in the script.
-- Sleep times are hard-coded as constant values based on what was recorded.
+Tuy nhiên, việc ghi lại kịch bản cũng có những hạn chế sau:
 
-For these reasons, you can reasonably expect a script recording to do a lot of the up-front work in getting started with a k6 script for you, but it's still a best practice to expect to modify your script, [debugging](../III-k6-Intermediate/01-How-to-debug-k6-load-testing-scripts.md) it to work the way you want it to and [making it more realistic](../XX-Future-Ideas/Best-practices-for-designing-realistic-k6-scripts.md).
+- Bạn chỉ có thể ghi lại các luồng người dùng liên quan đến các hành động bạn có thể thực hiện trong trình duyệt web.
+- Việc tương quan yêu cầu và phản hồi tự động chỉ hoạt động đối với các giá trị động thường dùng.
+- Trình ghi lưu lại tất cả thông tin mà trình duyệt của bạn gửi và nhận, điều này có thể dẫn đến việc tăng "nhiễu" trong kịch bản.
+- Thời gian sleep được mã hóa cứng dưới dạng các giá trị hằng số dựa trên những gì đã được ghi lại.
 
-Here are some things you should consider doing after recording a script:
-- Renaming or modifying the [groups](https://k6.io/docs/using-k6/tags-and-groups/#groups) recorded
-- [Adding checks to your script](04-Adding-checks-to-your-script.md)
-- [Making think time dynamic](05-Adding-think-time-using-sleep.md#Dynamic-think-time)
-- Adding or modifying [test options](06-k6-Load-Test-Options.md)
-- Adding ways to [organize code](https://k6.io/docs/using-k6/tags-and-groups/) and help colleagues understand what the script does
-- Shaking out the script by running it a few times and [debugging it](../III-k6-Intermediate/01-How-to-debug-k6-load-testing-scripts.md)
+Vì những lý do này, bạn có thể kỳ vọng rằng việc ghi lại kịch bản sẽ thực hiện được rất nhiều công việc ban đầu cho bạn, nhưng việc sửa đổi kịch bản, [gỡ lỗi (debugging)](../III-k6-Intermediate/01-How-to-debug-k6-load-testing-scripts.md) để nó hoạt động theo cách bạn muốn và [làm cho nó thực tế hơn](../XX-Future-Ideas/Best-practices-for-designing-realistic-k6-scripts.md) vẫn là một thực hành tốt nhất.
 
-## Test your knowledge
+Dưới đây là một số điều bạn nên cân nhắc thực hiện sau khi ghi lại một kịch bản:
 
-### Question 1
+- Đổi tên hoặc sửa đổi các [groups](https://k6.io/docs/using-k6/tags-and-groups/#groups) đã được ghi lại
+- [Thêm checks vào kịch bản của bạn](04-Adding-checks-to-your-script.md)
+- [Làm cho think time trở nên động](05-Adding-think-time-using-sleep.md#Dynamic-think-time)
+- Thêm hoặc sửa đổi các [tùy chọn kiểm thử (test options)](06-k6-Load-Test-Options.md)
+- Thêm các cách để [tổ chức mã nguồn](https://k6.io/docs/using-k6/tags-and-groups/) và giúp đồng nghiệp hiểu kịch bản làm gì
+- Sàng lọc kịch bản bằng cách chạy nó vài lần và [gỡ lỗi nó](../III-k6-Intermediate/01-How-to-debug-k6-load-testing-scripts.md)
 
-In which of the following situations might it be more appropriate to record a script rather than write it from scratch?
+## Kiểm tra kiến thức của bạn
 
-A: You want to test several API endpoints and the frontend for them has not yet been built.
+### Câu hỏi 1
 
-B: The page you're testing includes a lot of images, and you want to include the time it takes to retrieve those images in your test script.
+Trong tình huống nào sau đây, việc ghi lại một kịch bản có thể phù hợp hơn là viết từ đầu?
 
-C: You want to modify HTTP requests to go to a mocking service.
+A: Bạn muốn kiểm thử một vài API endpoint và frontend cho chúng vẫn chưa được xây dựng.
 
-### Question 2
+B: Trang bạn đang kiểm thử bao gồm rất nhiều hình ảnh và bạn muốn bao gồm thời gian cần thiết để truy xuất những hình ảnh đó trong kịch bản kiểm thử của mình.
 
-How much does it cost to use the k6 browser recorder?
+C: Bạn muốn sửa đổi các yêu cầu HTTP để đi đến một dịch vụ giả lập (mocking service).
 
-A: Nothing.
+### Câu hỏi 2
 
-B: It's free for the first month.
+Chi phí để sử dụng trình ghi trình duyệt k6 là bao nhiêu?
 
-C: You have to sign up for a k6 Cloud plan.
+A: Không tốn gì cả.
 
-### Question 3
+B: Miễn phí trong tháng đầu tiên.
 
-Which of the following statements about browser recording is true?
+C: Bạn phải đăng ký một gói k6 Cloud.
 
-A: You should be able to record a script and replay it right away with no modifications.
+### Câu hỏi 3
 
-B: After recording, it's a good idea to ramp up and run it with 100 users for your first test.
+Phát biểu nào sau đây về việc ghi trình duyệt là đúng?
 
-C: Using the browser recorder does not mean you won't have to modify test code to make the script work.
+A: Bạn có thể ghi lại một kịch bản và phát lại nó ngay lập tức mà không cần sửa đổi gì.
 
-### Answers
+B: Sau khi ghi, bạn nên tăng tải và chạy nó với 100 người dùng cho bài kiểm tra đầu tiên của mình.
 
-1. B. Recording a script is particularly useful for web applications where a single action (such as clicking on a link) requires downloading many other embedded resources, such as images or scripts.
-2. A. The k6 browser recorder is free and doesn't require a k6 Cloud subscription.
-3. C. After you record a script, you will likely also have to correlate dynamic data, add test data, or modify it in other ways before you can consistently and repeatably execute it within a load test.
+C: Việc sử dụng trình ghi trình duyệt không có nghĩa là bạn sẽ không phải sửa đổi mã kiểm thử để kịch bản hoạt động.
+
+### Đáp án
+
+1. B. Ghi lại một kịch bản đặc biệt hữu ích cho các ứng dụng web nơi một hành động duy nhất (chẳng hạn như nhấp vào một liên kết) yêu cầu tải xuống nhiều tài nguyên nhúng khác, chẳng hạn như hình ảnh hoặc scripts.
+2. A. Trình ghi trình duyệt k6 miễn phí và không yêu cầu đăng ký k6 Cloud.
+3. C. Sau khi bạn ghi lại một kịch bản, bạn có thể cũng sẽ phải tương quan dữ liệu động, thêm dữ liệu kiểm thử hoặc sửa đổi nó theo các cách khác trước khi bạn có thể thực thi nó một cách nhất quán và lặp lại trong một bài kiểm thử tải.

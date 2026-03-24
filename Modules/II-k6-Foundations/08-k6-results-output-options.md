@@ -1,28 +1,28 @@
-k6 doesn't natively have a way to graph load-testing results. However, it does have a lot of options to save the output in different formats. This [blog](https://k6.io/blog/ways-to-visualize-k6-results/) is a good starting point. And you can find the full list of results visualization integrations or tutorials [here](https://k6.io/docs/integrations/#result-store-and-visualization).
+k6 không có cách nguyên bản để vẽ biểu đồ kết quả load-testing. Tuy nhiên, nó có rất nhiều tùy chọn để lưu đầu ra ở các định dạng khác nhau. Bài [blog](https://k6.io/blog/ways-to-visualize-k6-results/) này là một điểm bắt đầu tốt. Và bạn có thể tìm thấy danh sách đầy đủ các tích hợp hoặc hướng dẫn trực quan hóa kết quả [tại đây](https://k6.io/docs/integrations/#result-store-and-visualization).
 
-In this section, we'll discuss two common test-result formats: CSV and JSON.
+Trong phần này, chúng ta sẽ thảo luận về hai định dạng kết quả kiểm thử phổ biến: CSV và JSON.
 
-Note: For both CSV and JSON formats, you'll need your own visualization tool. This could be anything from [Google Sheets](https://sheets.google.com), to [Grafana](https://grafana.com), to [Tableau](https://tableau.com).
+Lưu ý: Đối với cả định dạng CSV và JSON, bạn sẽ cần công cụ trực quan hóa của riêng mình. Đây có thể là bất cứ thứ gì từ [Google Sheets](https://sheets.google.com), đến [Grafana](https://grafana.com), hay [Tableau](https://tableau.com).
 
-## What's the difference between end-of-test results and time-series results?
+## Sự khác biệt giữa kết quả kết thúc kiểm thử (end-of-test results) và kết quả chuỗi thời gian (time-series results) là gì?
 
 ## CSV
 
-### Saving k6 results as a CSV
+### Lưu kết quả k6 dưới dạng CSV
 
-Saving k6 results into a CSV file is good for further analysis in your data visualization software of choice. The CSV can be opened as a spreadsheet or used to generate graphs and summary tables.
+Lưu kết quả k6 vào tệp CSV rất tốt cho việc phân tích sâu hơn trong phần mềm trực quan hóa dữ liệu mà bạn chọn. Tệp CSV có thể được mở dưới dạng bảng tính hoặc được sử dụng để tạo biểu đồ và bảng tóm tắt.
 
-To output k6 test results to a CSV file, use this command when running the test:
+Để xuất kết quả kiểm thử k6 ra tệp CSV, hãy sử dụng lệnh này khi chạy bài kiểm tra:
 
 ```plain
 k6 run test.js -o csv=results.csv
 ```
 
-You can also use `--out` instead of `-o`.
+Bạn cũng có thể sử dụng `--out` thay vì `-o`.
 
-### CSV results output format
+### Định dạng đầu ra kết quả CSV
 
-The command above will save k6 results as a CSV in the following format:
+Lệnh trên sẽ lưu kết quả k6 dưới dạng CSV theo định dạng sau:
 
 ```csv
 metric_name,timestamp,metric_value,check,error,error_code,expected_response,group,method,name,proto,scenario,service,status,subproto,tls_version,url,extra_tags
@@ -40,48 +40,48 @@ vus,1641298536,2.000000,,,,,,,,,,,,,,,
 vus_max,1641298536,100.000000,,,,,,,,,,,,,,,
 ```
 
-Each line in the file is a single measurement that was taken during the test execution.
+Mỗi dòng trong tệp là một phép đo duy nhất được thực hiện trong quá trình thực thi kiểm thử.
 
-The results file uses the following columns:
+Tệp kết quả sử dụng các cột sau:
 
-- **`metric_name`**: The name of the metric for which a value is recorded. By default, k6 comes with [these built-in metrics](https://k6.io/docs/using-k6/metrics/#built-in-metrics). All values for all metrics are put in the same results file for easier analysis.
-- **`timestamp`**: The local date and time that each measurement was taken, [in Epoch time](https://www.epochconverter.com/).
-- **`metric_value`**: The reading for the given metric at the timestamp provided. The unit of measurement for this value differs depending on the metric. For example, `http_req_duration` values are in milliseconds.
-- **`check`**: The unique name given to the check being verified. In the check example below, the check name is `Application says hello`:
+- **`metric_name`**: Tên của chỉ số (metric) mà giá trị được ghi lại. Theo mặc định, k6 đi kèm với [các chỉ số tích hợp sẵn này](https://k6.io/docs/using-k6/metrics/#built-in-metrics). Tất cả giá trị cho tất cả các metrics được đưa vào cùng một tệp kết quả để phân tích dễ dàng hơn.
+- **`timestamp`**: Ngày và giờ địa phương mà mỗi phép đo được thực hiện, [tính theo Epoch time](https://www.epochconverter.com/).
+- **`metric_value`**: Giá trị đọc được cho chỉ số đã cho tại dấu thời gian được cung cấp. Đơn vị đo lường cho giá trị này khác nhau tùy thuộc vào chỉ số. Ví dụ, các giá trị `http_req_duration` tính bằng mili giây.
+- **`check`**: Tên duy nhất được đặt cho check đang được xác minh. Trong ví dụ check bên dưới, tên check là `Application says hello`:
 
   ```js
   check(response, {
-  'Application says hello': (r) => r.body.includes('Hello world!')
+    "Application says hello": (r) => r.body.includes("Hello world!"),
   });
   ```
-      
-- **`error`**: The text of any non-HTTP errors encountered, such as network or DNS errors. This value is empty if there were no errors.
-- **`error_code`**: A k6 error code. This value is empty if there were no errors. [Here is a full list](https://k6.io/docs/javascript-api/error-codes) of possible error codes.
-- **`expected_response`**: A boolean (`true` or `false`) indicating whether the response returned was as expected (an HTTP code less than 400 by default).
-- **`group`**: The name of a [request group](https://k6.io/docs/using-k6/tags-and-groups/#groups) that the metric belongs to.
-- **`method`**: The name of the HTTP method used, such as `GET` or `POST`, or the RPC method name for gRPC.
-- **`name`**: The name of the request sent. This defaults to the URL, but can be [changed using tags](https://k6.io/docs/using-k6/http-requests#url-grouping).
-- **`proto`**: The name of the protocol being used, such as `HTTP/1.1`.
-- **`scenario`**: The name of the test scenario within which the measurement was taken. The standard scenario is `default`.
-- **`service`**: For gRPC, the RPC service name.
-- **`subproto`**: For websockets, the subprotocol name.
-- **`tls_version`**: The type of Transport Layer Security (TLS) used to encrypt the connection.
-- **`url`**: The URL of the request sent. Unless the name is changed, this is the same as `name`.
-- **`extra_tags`**: Tags that apply to this measurement. Empty unless [tags](https://k6.io/docs/using-k6/tags-and-groups/) are used within the script.
+
+- **`error`**: Văn bản của bất kỳ lỗi nào không phải HTTP gặp phải, chẳng hạn như lỗi mạng hoặc DNS. Giá trị này để trống nếu không có lỗi.
+- **`error_code`**: Một mã lỗi k6. Giá trị này để trống nếu không có lỗi. [Đây là danh sách đầy đủ](https://k6.io/docs/javascript-api/error-codes) các mã lỗi có thể có.
+- **`expected_response`**: Một giá trị boolean (`true` hoặc `false`) cho biết phản hồi trả về có như mong đợi hay không (mặc định là mã HTTP nhỏ hơn 400).
+- **`group`**: Tên của một [nhóm yêu cầu (request group)](https://k6.io/docs/using-k6/tags-and-groups/#groups) mà chỉ số đó thuộc về.
+- **`method`**: Tên của phương thức HTTP được sử dụng, chẳng hạn như `GET` hoặc `POST`, hoặc tên phương thức RPC cho gRPC.
+- **`name`**: Tên của yêu cầu đã gửi. Mặc định là URL, nhưng có thể [thay đổi bằng cách sử dụng tags](https://k6.io/docs/using-k6/http-requests#url-grouping).
+- **`proto`**: Tên của giao thức đang được sử dụng, chẳng hạn như `HTTP/1.1`.
+- **`scenario`**: Tên của kịch bản kiểm thử (test scenario) mà phép đo được thực hiện. Kịch bản tiêu chuẩn là `default`.
+- **`service`**: Đối với gRPC, tên dịch vụ RPC.
+- **`subproto`**: Đối với websockets, tên subprotocol.
+- **`tls_version`**: Loại bảo mật lớp truyền tải (Transport Layer Security - TLS) được sử dụng để mã hóa kết nối.
+- **`url`**: URL của yêu cầu đã gửi. Trừ khi tên được thay đổi, giá trị này giống như `name`.
+- **`extra_tags`**: Các thẻ (tags) áp dụng cho phép đo này. Để trống trừ khi [tags](https://k6.io/docs/using-k6/tags-and-groups/) được sử dụng trong kịch bản.
 
 ## JSON
 
-### Saving k6 results as a JSON
+### Lưu kết quả k6 dưới dạng JSON
 
-To output k6 results to a JSON file, run the test with this command:
+Để xuất kết quả k6 ra tệp JSON, hãy chạy bài kiểm tra với lệnh này:
 
 ```plain
 k6 run test.js -o json=results.json
 ```
 
-### JSON results output format
+### Định dạng đầu ra kết quả JSON
 
-The JSON file will look something like this:
+Tệp JSON sẽ trông giống như thế này:
 
 ```plain
 {"type":"Metric","data":{"name":"http_reqs","type":"counter","contains":"default","tainted":null,"thresholds":[],"submetrics":null,"sub":{"name":"","parent":"","suffix":"","tags":null}},"metric":"http_reqs"}
@@ -91,39 +91,39 @@ The JSON file will look something like this:
 {"type":"Metric","data":{"name":"http_req_blocked","type":"trend","contains":"time","tainted":null,"thresholds":[],"submetrics":null,"sub":{"name":"","parent":"","suffix":"","tags":null}},"metric":"http_req_blocked"}
 ```
 
-Each line is either a metric or a point. A **metric** defines either [built-in metrics](https://k6.io/docs/using-k6/metrics/#built-in-metrics) or custom metrics in terms of their type, thresholds related to them, or whether they have caused any thresholds to fail. A **point** is a measurement for a metric, and contains the actual value of the metric at a given timestamp.
+Mỗi dòng là một metric hoặc một point. Một **metric** định nghĩa các [chỉ số tích hợp sẵn](https://k6.io/docs/using-k6/metrics/#built-in-metrics) hoặc các chỉ số tùy chỉnh theo loại của chúng, các thresholds liên quan đến chúng, hoặc liệu chúng có gây ra bất kỳ thresholds nào thất bại hay không. Một **point** là một phép đo cho một metric, và chứa giá trị thực tế của chỉ số đó tại một dấu thời gian nhất định.
 
-## Test your knowledge
+## Kiểm tra kiến thức của bạn
 
-### Question 1
+### Câu hỏi 1
 
-Which of the following statements about the default k6 CSV results format is true?
+Phát biểu nào sau đây về định dạng kết quả CSV mặc định của k6 là đúng?
 
-A: To graph the response time, you must take the number in the `metric_value` column from every line in the CSV file.
+A: Để vẽ biểu đồ thời gian phản hồi, bạn phải lấy con số trong cột `metric_value` từ mọi dòng trong tệp CSV.
 
-B: Each line contains a metric and a value for that metric at a specific timestamp.
+B: Mỗi dòng chứa một chỉ số và một giá trị cho chỉ số đó tại một dấu thời gian cụ thể.
 
-C: The `metric_name` column in the CSV file refers to the URL of the HTTP request that was sent.
+C: Cột `metric_name` trong tệp CSV đề cập đến URL của yêu cầu HTTP đã được gửi.
 
-### Question 2
+### Câu hỏi 2
 
-Below is a line from a JSON containing k6 test results:
+Dưới đây là một dòng từ tệp JSON chứa kết quả kiểm thử k6:
 
 ```plain
 {"type":"Point","data":{"time":"2022-01-05T12:46:26.893633+01:00","value":100,"tags":null},"metric":"vus_max"}
 ```
 
-What can we determine from this line?
+Chúng ta có thể xác định được điều gì từ dòng này?
 
-A: The maximum number of VUs at the time was 100.
+A: Số lượng VUs tối đa tại thời điểm đó là 100.
 
-B: This measurement is for the `http_req_duration` metric.
+B: Phép đo này dành cho chỉ số `http_req_duration`.
 
-C: The test reached the maximum number of VUs at 12:46 on January 5th, 2022.
+C: Bài kiểm tra đã đạt đến số lượng VUs tối đa vào lúc 12:46 ngày 5 tháng 1 năm 2022.
 
-### Question 3
+### Câu hỏi 3
 
-Which of the following is the correct command for outputting k6 results to different formats? 
+Lệnh nào sau đây là lệnh đúng để xuất kết quả k6 ra các định dạng khác nhau?
 
 A: `k6 run test.js --out json=myresults.json`
 
@@ -133,14 +133,14 @@ C: `k6 output csv=results.csv`
 
 ## k6 Cloud
 
-The previous two options let you output k6 results in different formats, but they still require some setup as you do the analysis in a separate results visualization software.
+Hai tùy chọn trước đó cho phép bạn xuất kết quả k6 ở các định dạng khác nhau, nhưng chúng vẫn yêu cầu một số thiết lập khi bạn thực hiện phân tích trong một phần mềm trực quan hóa kết quả riêng biệt.
 
-An alternative to this is to use k6 Cloud. k6 Cloud is a paid SaaS platform built around k6 OSS. You can use k6 without using k6 Cloud, but k6 Cloud does provide some added functionalities that are quite useful, and one of them is results visualization.
+Một giải pháp thay thế cho việc này là sử dụng k6 Cloud. k6 Cloud là một nền tảng SaaS trả phí được xây dựng xung quanh k6 OSS. Bạn có thể sử dụng k6 mà không cần sử dụng k6 Cloud, nhưng k6 Cloud cung cấp một số chức năng bổ sung khá hữu ích, và một trong số đó là trực quan hóa kết quả.
 
-The next section talks about k6 Cloud, how to use it in conjunction with k6 OSS, and how it could help you analyze results.
+Phần tiếp theo sẽ nói về k6 Cloud, cách sử dụng nó kết hợp với k6 OSS và cách nó có thể giúp bạn phân tích kết quả.
 
-### Answers
+### Đáp án
 
-1. B. A is incorrect because the CSV output includes multiple metrics, not just `http_req_duration`. C is incorrect because `url` is the column that contains the URL for the request.
-2. A. The metric is `vus_max`, which is the number of virtual users that were running at that time (100, in this case). However, this does not necessarily correspond to the maximum number of VUs for the test, since the test could have ramped up further beyond this point.
-3. A. Only A has the correct syntax for outputting results.
+1. B. A sai vì đầu ra CSV bao gồm nhiều metrics, không chỉ mỗi `http_req_duration`. C sai vì `url` mới là cột chứa URL cho yêu cầu.
+2. A. Chỉ số là `vus_max`, chính là số lượng người dùng ảo đang chạy tại thời điểm đó (trong trường hợp này là 100). Tuy nhiên, điều này không nhất thiết tương ứng với số lượng VUs tối đa cho bài kiểm tra, vì bài kiểm tra có thể đã tăng tải xa hơn điểm này.
+3. A. Chỉ có A là có cú pháp đúng để xuất kết quả.

@@ -1,46 +1,47 @@
-# Getting Started with k6 OSS
+# Bắt đầu với k6 OSS
 
-There are many ways to start scripting with k6, but we're starting with [k6 OSS](https://github.com/grafana/k6) for a few reasons:
-- It is a fully-fledged load testing tool on its own, and it doesn't require a subscription or any payment to use.
-- k6 Cloud, the SaaS platform, also uses k6 OSS, so the skills you learn in this section will apply even if you decide to use k6 Cloud later.
-- You can add advanced scenarios and features to your k6 OSS scripts. The other methods of script generation that we'll discuss later are limited in functionality.
+Có nhiều cách để bắt đầu viết kịch bản (scripting) với k6, nhưng chúng ta sẽ bắt đầu với [k6 OSS](https://github.com/grafana/k6) vì một vài lý do sau:
 
-Let's get started!
+- Đây là một công cụ kiểm thử tải (load testing) hoàn chỉnh, và nó không yêu cầu đăng ký trả phí để sử dụng.
+- k6 Cloud, nền tảng SaaS, cũng sử dụng k6 OSS, vì vậy những kỹ năng bạn học được trong phần này sẽ vẫn áp dụng được ngay cả khi bạn quyết định sử dụng k6 Cloud sau này.
+- Bạn có thể thêm các kịch bản (scenarios) và tính năng nâng cao vào kịch bản k6 OSS của mình. Các phương pháp tạo kịch bản khác mà chúng ta sẽ thảo luận sau này thường bị hạn chế về chức năng.
 
-## Installation
+Hãy bắt đầu nào!
 
-First, install k6 by [following the instructions here](https://k6.io/docs/getting-started/installation/) for your operating system.
+## Cài đặt
 
-Next, pick your favorite IDE or text editor. Many of us use and recommend [VS Code](https://code.visualstudio.com/), but you can also use [Sublime Text](https://www.sublimetext.com/), [Atom](https://atom.io/), or anything else you're already using that can create text files.
+Đầu tiên, hãy cài đặt k6 bằng cách [làm theo các hướng dẫn tại đây](https://k6.io/docs/getting-started/installation/) cho hệ điều hành của bạn.
 
-## Writing your first k6 script
+Tiếp theo, hãy chọn IDE hoặc trình soạn thảo văn bản yêu thích của bạn. Nhiều người trong chúng tôi sử dụng và khuyên dùng [VS Code](https://code.visualstudio.com/), nhưng bạn cũng có thể sử dụng [Sublime Text](https://www.sublimetext.com/), [Atom](https://atom.io/), hoặc bất cứ thứ gì bạn đang sử dụng có thể tạo tệp văn bản.
 
-Time to write the script!
+## Viết kịch bản k6 đầu tiên của bạn
 
-k6 supports multiple protocols, but for now, let's stick to HTTP. Your first script will do a basic HTTP POST request against a test API that will echo back whatever you send to it.
+Đã đến lúc viết kịch bản!
 
-The fastest way to create a k6 test is to use the `k6 new [filename]` command introduced in k6 version 0.48.0. This will automatically create a file with the basic boilerplate you need to get you up and running quickly. 
+k6 hỗ trợ nhiều giao thức, nhưng hiện tại, hãy tập trung vào HTTP. Kịch bản đầu tiên của bạn sẽ thực hiện một yêu cầu HTTP POST cơ bản tới một API thử nghiệm, API này sẽ phản hồi lại bất cứ thứ gì bạn gửi cho nó.
 
-But, as part of your k6 learning, we will also teach you how to create a test manually.
+Cách nhanh nhất để tạo một bài kiểm tra k6 là sử dụng lệnh `k6 new [filename]` được giới thiệu trong k6 phiên bản 0.48.0. Lệnh này sẽ tự động tạo một tệp với mã mẫu (boilerplate) cơ bản bạn cần để bắt đầu nhanh chóng.
 
-Create a new file named `test.js`, and open it in your favorite IDE. This file is our test script. k6 scripts are always written in JavaScript, even though k6 itself is written in Go. We're going to create the script together, step by step. Copy and paste the code snippets as necessary, so that your script looks like the one here. 
+Nhưng, như một phần của việc học k6, chúng tôi cũng sẽ dạy bạn cách tạo một bài kiểm tra theo cách thủ công.
 
-Import the HTTP Client from the built-in module `k6/http`:
+Tạo một tệp mới tên là `test.js`, và mở nó trong IDE yêu thích của bạn. Tệp này là kịch bản kiểm thử của chúng ta. Các kịch bản k6 luôn được viết bằng JavaScript, mặc dù bản thân k6 được viết bằng Go. Chúng ta sẽ cùng nhau tạo kịch bản này theo từng bước. Hãy sao chép và dán các đoạn mã khi cần thiết, để kịch bản của bạn trông giống như kịch bản ở đây.
+
+Nhập HTTP Client từ module có sẵn `k6/http`:
 
 ```js
 import http from 'k6/http';
 ```
 
-Now, create and export a default function:
+Bây giờ, hãy tạo và xuất một hàm mặc định (default function):
 
 ```js
 export default function() {
 }
 ```
 
-Any code in the `default` function is executed by each k6 virtual user when the test runs.
+Bất kỳ mã nào trong hàm `default` sẽ được thực thi bởi mỗi người dùng ảo (virtual user - VU) của k6 khi bài kiểm tra chạy.
 
-Add the logic for making the actual HTTP call:
+Thêm logic để thực hiện cuộc gọi HTTP thực tế:
 
 ```js
 import http from 'k6/http';
@@ -51,9 +52,9 @@ export default function() {
 }
 ```
 
-Here, you're instructing k6 to send an HTTP POST request to the API endpoint `https://httpbin.test.k6.io/post` with the body `Hello world!`
+Ở đây, bạn đang hướng dẫn k6 gửi một yêu cầu HTTP POST tới endpoint của API `https://httpbin.test.k6.io/post` với phần thân (body) là `Hello world!`
 
-You could actually run this script already, and k6 would make the HTTP POST request, but how would you know if it worked? Here's how to log the response to the console:
+Thực tế bạn đã có thể chạy kịch bản này rồi, và k6 sẽ thực hiện yêu cầu HTTP POST, nhưng làm thế nào bạn biết nó có hoạt động hay không? Đây là cách để ghi lại phản hồi (response) ra console:
 
 ```js
 import http from 'k6/http';
@@ -66,17 +67,17 @@ export default function() {
 }
 ```
 
-You'll learn more ways to verify the results of your tests later, but for now, go ahead and run your first test!
+Bạn sẽ học thêm các cách khác để xác minh kết quả kiểm thử sau này, nhưng bây giờ, hãy tiến hành chạy bài kiểm tra đầu tiên của bạn!
 
-## Hello World: running your k6 script
+## Hello World: chạy kịch bản k6 của bạn
 
-Save your script in your editor. Then, open up your terminal and go to the directory where you saved your k6 script. Now, run the test:
+Lưu kịch bản trong trình soạn thảo của bạn. Sau đó, mở terminal và đi đến thư mục nơi bạn đã lưu kịch bản k6. Bây giờ, hãy chạy bài kiểm tra:
 
 ```js
 k6 run test.js
 ```
 
-You should get something like this:
+Bạn sẽ nhận được kết quả tương tự như thế này:
 
 ```plain
 $ k6 run test.js
@@ -116,17 +117,17 @@ default ✓ [======================================] 1 VUs  00m00.7s/10m0s  1/1 
 
 ```
 
-That's a lot of metrics! In the next section, we'll go over what each of these lines mean.
+Đó là rất nhiều chỉ số (metrics)! Trong phần tiếp theo, chúng ta sẽ xem xét ý nghĩa của từng dòng này.
 
-## Other resources
+## Các tài nguyên khác
 
 [![Week of Load testing day 3: Installing k6 and running load test](../../images/week-of-testing-youtube.png)](https://www.youtube.com/embed/y5tteMKZUqk)
 
-## Test your knowledge
+## Kiểm tra kiến thức của bạn
 
-### Question 1
+### Câu hỏi 1
 
-What's the best way to access the JSON body of an HTTP response?
+Cách tốt nhất để truy cập JSON body của một phản hồi HTTP là gì?
 
 A: `response.json()`
 
@@ -134,9 +135,9 @@ B: `response.body()`
 
 C: `response.content`
 
-### Question 2
+### Câu hỏi 2
 
-What is the name of the built-in module that contains the HTTP client?
+Tên của module có sẵn chứa HTTP client là gì?
 
 A: `http`
 
@@ -144,18 +145,18 @@ B: `k6/http-client`
 
 C: `k6/http`
 
-### Question 3
+### Câu hỏi 3
 
-Where in a test script should we place HTTP calls to have them executed by a virtual user?
+Trong một kịch bản kiểm thử, chúng ta nên đặt các cuộc gọi HTTP ở đâu để chúng được thực thi bởi một người dùng ảo?
 
-A: In the global scope
+A: Trong phạm vi toàn cục (global scope)
 
-B: In an exported default function
+B: Trong một hàm mặc định được xuất (exported default function)
 
-C: In a function called `exec()`
+C: Trong một hàm có tên là `exec()`
 
-### Answers
+### Đáp án
 
-1. A. Using `response.json()` will not only get the response body but also parse the JSON.
-2. C. `k6/http` is the module that needs to be imported in a k6 script if you want to use HTTP. The other two options do not exist.
-3. B. Only code placed within an exported function (either the default one or one that is named in the `exec` option [of a scenario](https://k6.io/docs/using-k6/scenarios/#common-options)) will be executed by a virtual user.
+1. A. Sử dụng `response.json()` không chỉ lấy được phần thân phản hồi mà còn phân tích cú pháp (parse) JSON đó.
+2. C. `k6/http` là module cần được nhập vào kịch bản k6 nếu bạn muốn sử dụng HTTP. Hai tùy chọn còn lại không tồn tại.
+3. B. Chỉ mã được đặt trong một hàm được xuất (có thể là hàm mặc định hoặc hàm được đặt tên trong tùy chọn `exec` [của một scenario](https://k6.io/docs/using-k6/scenarios/#common-options)) mới được thực thi bởi một người dùng ảo.
